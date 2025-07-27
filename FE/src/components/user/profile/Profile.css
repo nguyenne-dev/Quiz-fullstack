@@ -1,0 +1,271 @@
+.profile-wrapper {
+  position: relative;
+  max-width: 1200px;
+  min-width: 400px;
+  width: 80%;
+  margin: auto;
+  border-radius: 25px;
+  background-color: #f0f4f8;
+  padding: 50px;
+  border: 1px solid #d1d5db;
+  box-shadow: 10px 8px 24px rgba(0, 0, 0, 0.06);
+
+  animation: fadeIn 0.4s ease;
+}
+
+.sidebar-profile {
+  position: absolute;
+  left: 30px;
+  border-radius: 12px;
+  background-color: #e0e7ff;
+  font-family: 'Segoe UI', sans-serif;
+  border: 2px solid black;
+  width: 25%;
+  height: calc(100% - 140px);
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.sidebar-title {
+  padding: 12px 16px;
+  font-size: 26px;
+  font-weight: 600;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  text-align: start;
+  color: black;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-item,
+.sidebar-item-fold {
+  display: flex;
+  font-size: 14px;
+  gap: 5px;
+  align-items: center;
+  width: 80%;
+  padding: 12px 10px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: #333;
+  font-weight: 500;
+}
+
+.sidebar-item-fold {
+  display: none;
+}
+
+.sidebar-item:hover {
+  background-color: #33333333;
+}
+
+.sidebar-item.active,
+.sidebar-item-fold.active {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.profile {
+  position: relative;
+  flex: 1;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 20%;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: #000000 solid 2px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile__title {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #0077cc;
+}
+
+.profile__button {
+  padding: 8px 16px;
+  border: none;
+  width: 80px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.profile__button--groupEdit {
+  display: flex;
+  justify-content: center;
+  gap: 20%;
+  align-items: center;
+}
+
+.profile__button--edit {
+  width: 150px;
+  height: 45px;
+  background-color: #000000;
+  color: #ffffff;
+  margin-top: 30px;
+}
+
+.profile__button--edit:hover {
+  background-color: #e0a800;
+}
+
+.profile__button--save {
+  width: 150px;
+  height: 45px;
+  background-color: #28a745;
+  color: #fff;
+  margin-top: 30px;
+}
+
+.profile__button--save:hover {
+  background-color: #218838;
+}
+
+.profile__button--exit {
+  width: 150px;
+  height: 45px;
+  background-color: #555;
+  color: #fff;
+  margin-top: 30px;
+}
+
+.profile__button--exit:hover {
+  background-color: #000000;
+}
+
+.profile__form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile__group {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile__label {
+  font-weight: 500;
+  color: #555;
+  width: 30%;
+  max-width: 150px;
+}
+
+.profile__input {
+  padding: 10px;
+  font-size: 15px;
+  transition: 0.2s ease;
+  flex: 1;
+  border: none;
+  border-bottom: 2px dashed black;
+  background-color: transparent;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  top: 50%;
+  right: 0px;
+}
+
+.profile__input:focus {
+  outline: none;
+  border-color: #0077cc;
+  box-shadow: 0 0 4px rgba(0, 119, 204, 0.3);
+}
+
+.profile__input:disabled,
+.profile__input[readonly] {
+  cursor: not-allowed;
+}
+
+@media(max-width: 768px) {
+  .profile-wrapper {
+    width: 100%;
+    padding: 10px;
+    margin: 0
+  }
+
+  .sidebar-profile {
+    width: 30%;
+    padding: 10px;
+    height: calc(100% - 60px);
+    left: 0;
+  }
+
+  .profile {
+    margin-left: 25%;
+    background-color: #fff;
+    border-radius: 12px;
+    border: #000000 solid 2px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+    padding: 10px;
+  }
+
+  .profile__group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .profile__label {
+    width: 100%;
+  }
+
+  .profile__input {
+    width: 100%;
+  }
+
+  .profile__button {
+    padding: 8px 16px;
+    border: none;
+    width: 100%;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .sidebar-item-fold {
+    display: flex;
+    justify-content: center;
+  }
+
+  .sidebar-item {
+    display: none;
+  }
+}

@@ -1,0 +1,149 @@
+.rePass-wrapper {
+  position: relative;
+  display: flex;
+  max-width: 1200px;
+  min-width: 400px;
+  width: 80%;
+  height: 80vh;
+  margin: auto;
+  margin-top: 10vh;
+  border-radius: 25px;
+  background-color: #f0f4f8;
+  padding: 50px;
+  border: 1px solid #d1d5db;
+  box-shadow: 10px 8px 24px rgba(0, 0, 0, 0.06);
+
+  animation: fadeIn 0.4s ease;
+}
+
+.rePass {
+  position: relative;
+  width: 90%;
+  margin: auto;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: #000000 solid 2px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rePass__title {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #0077cc;
+}
+
+.rePass__button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  width: 150px;
+  height: 45px;
+  background-color: #28a745;
+  color: #fff;
+  margin-top: 30px;
+  cursor: pointer;
+}
+
+.rePass__button--save:hover {
+  background-color: #218838;
+}
+
+.rePass__form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rePass__group {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.rePass__label {
+  font-weight: 500;
+  color: #555;
+  width: 30%;
+  max-width: 150px;
+}
+
+.rePass__input {
+  padding: 10px;
+  font-size: 15px;
+  transition: 0.2s ease;
+  flex: 1;
+  border: none;
+  border-bottom: 2px dashed black;
+  background-color: transparent;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  top: 50%;
+  right: 0px;
+}
+
+.rePass__input:focus {
+  outline: none;
+  border-color: #0077cc;
+  box-shadow: 0 0 4px rgba(0, 119, 204, 0.3);
+}
+
+.rePass__input:disabled,
+.rePass__input[readonly] {
+  cursor: not-allowed;
+}
+
+@media(max-width: 768px) {
+  .rePass-wrapper {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .rePass__group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .rePass__label {
+    width: 100%;
+  }
+
+  .rePass__input {
+    width: 100%;
+  }
+
+  .rePass__button {
+    padding: 8px 16px;
+    border: none;
+    width: 100%;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+}

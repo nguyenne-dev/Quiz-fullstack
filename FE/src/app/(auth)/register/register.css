@@ -1,0 +1,103 @@
+body {
+  background-color: #f4f4f4;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.minimal-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  position: relative;
+  background-image: url("/images/bg-auth.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.minimal-form {
+  background: linear-gradient(135deg, #ccefff, #b0e6ff, #9befff);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 400px;
+  position: absolute;
+  right: 150px;
+}
+
+.form-title {
+  font-size: 1.8rem;
+  margin-bottom: 24px;
+  text-align: center;
+  color: #222;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #fff;
+  transition: border 0.2s ease;
+}
+
+input:focus,
+select:focus {
+  border-color: #0070f3;
+  outline: none;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #0070f3;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #0059c1;
+}
+
+a {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  color: #0070f3;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+@media(max-width: 768px){
+  .minimal-form{
+    position: static;
+  }
+}
+
+/* Hiệu ứng */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
