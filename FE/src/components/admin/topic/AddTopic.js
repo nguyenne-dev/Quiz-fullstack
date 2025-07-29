@@ -2,16 +2,12 @@ import { useState } from "react";
 import { createTopic } from "../../../services/topicService";
 import { Button, CircularProgress } from "@mui/material";
 
-function AddTopicForm({ onClose, onReload }) {
-
-  const [showNotify, setShowNotify] = useState(false);
-  const [message, setMessage] = useState("!");
-  const [severity, setSeverity] = useState("success"); // success | error
+function AddTopicForm({ onClose, onReload, setShowNotify, setMessage, setSeverity }) {
 
   const [btnLoading, setBtnLoading] = useState(false)
 
   // State để lưu tên chủ đề và mô tả
-  const [title, setTitle] = useState(""); // name - tên chủ đề
+  const [title, setTitle] = useState(""); // title - tên chủ đề
   const [description, setDescription] = useState(""); // description - mô tả
 
   // // Hàm xử lý khi bấm nút xác nhận
@@ -44,9 +40,8 @@ function AddTopicForm({ onClose, onReload }) {
 
         // Reload lại danh sách
         onReload();
-        setTimeout(() => { setShowNotify(false); onClose(); setBtnLoading(false); }, 1000);
-
-
+        onClose();
+        setTimeout(() => { setShowNotify(false); setBtnLoading(false); }, 3000);
       } else {
         setSeverity("error");
         setMessage(result.message || "Đã xảy ra lỗi!");
@@ -61,12 +56,6 @@ function AddTopicForm({ onClose, onReload }) {
   return (
     <>
       <div className="overlay">
-        {showNotify && (
-          <div className={`notify notify--${severity}`}>
-            {message}
-          </div>
-        )}
-
         <div className="form-container">
           <h2 className="form-title">Thêm chủ đề</h2>
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./topic.css"
+import EditTopic from "./EditTopic"
 import { delTopic, getTopic } from '../../../services/topicService';
 import { FaEllipsisV } from "react-icons/fa";
 
@@ -11,11 +12,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
-function ListTopic({ reLoad, onReload }) {
-
-  const [showNotify, setShowNotify] = useState(false);
-  const [message, setMessage] = useState("!");
-  const [severity, setSeverity] = useState("success"); // success | error
+function ListTopic({ reLoad, onReload, setShowNotify, setMessage, setSeverity }) {
 
   const [topics, setTopics] = useState([]);
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
@@ -63,13 +60,8 @@ function ListTopic({ reLoad, onReload }) {
 
   return (
     <>
-      {showFormEdit && <EditCategoryForm onClose={() => setShowFormEdit(false)} item={itemEdit} onReload={() => onReload(Date.now())} />}
-      <TableContainer component={Paper} sx={{ maxHeight: '70vh' }}>
-        {showNotify && (
-          <div className={`notify notify--${severity}`}>
-            {message}
-          </div>
-        )}
+      {showFormEdit && <EditTopic onClose={() => setShowFormEdit(false)} item={itemEdit} onReload={onReload} setShowNotify={setShowNotify} setMessage={setMessage} setSeverity={setSeverity} />}
+      <TableContainer component={Paper} sx={{ maxHeight: '70vh' }} onClick={() => toggleMenu(null)}>
         <Table sx={{ minWidth: 400 }} aria-label="simple table">
           <TableHead>
             <TableRow>
@@ -86,7 +78,7 @@ function ListTopic({ reLoad, onReload }) {
                 <TableCell align="center">
                   <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: 'relative' }}>
                     <FaEllipsisV style={{ fontSize: "16px", cursor: "pointer", }}
-                      onClick={() => toggleMenu(i)}
+                      onClick={(e) => { e.stopPropagation(); toggleMenu(i) }}
                     />
                     {openMenuIndex === i && (
                       <div className="action-menu">
