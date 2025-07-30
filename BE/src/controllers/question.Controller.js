@@ -22,7 +22,7 @@ const getQuestionTopic = async (req, res) => {
     }
 
     // Kiểm tra topicId có tồn tại không
-    const topicExists = await Topic.findById(topicId);
+    const topicExists = await Topic.findById(topicId).populate("topicId", "title");
     if (!topicExists) {
       return res.status(404).json({ success: false, message: "Không tìm thấy chủ đề" });
     }
@@ -47,7 +47,7 @@ const getQuestion = async (req, res) => {
   try {
 
     // Lấy danh sách tất cả câu hỏi
-    const questions = await Question.find();
+    const questions = await Question.find().populate("topicId", "title");
 
     return res.status(200).json({ success: true, message: "Lấy dữ liệu thành công", questions });
 
