@@ -15,7 +15,7 @@ import Paper from '@mui/material/Paper';
 function ListTopic({ reLoad, onReload, setShowNotify, setMessage, setSeverity }) {
 
   const [topics, setTopics] = useState([]);
-  const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const [openMenu, setOpenMenu] = useState(null);
   const [showFormEdit, setShowFormEdit] = useState(false);
   const [itemEdit, setItemEdit] = useState({});
 
@@ -27,7 +27,7 @@ function ListTopic({ reLoad, onReload, setShowNotify, setMessage, setSeverity })
   }, [reLoad])
 
   const toggleMenu = (index) => {
-    setOpenMenuIndex(openMenuIndex === index ? null : index);
+    setOpenMenu(openMenu === index ? null : index);
   };
 
   const handleEdit = (item) => {
@@ -46,7 +46,7 @@ function ListTopic({ reLoad, onReload, setShowNotify, setMessage, setSeverity })
       setShowNotify(true);
       setTimeout(() => setShowNotify(false), 3000);
       onReload(Date.now());
-      setOpenMenuIndex(null);
+      setOpenMenu(null);
       return;
     } else {
       setSeverity("error");
@@ -71,7 +71,7 @@ function ListTopic({ reLoad, onReload, setShowNotify, setMessage, setSeverity })
             </TableRow>
           </TableHead>
           <TableBody>
-            {topics.map((item, i) => (
+            {topics?.map((item, i) => (
               <TableRow key={item._id} sx={{ "&:hover": { backgroundColor: "#f5f5f5" }, }}>
                 <TableCell component="th" scope="row">{item.title}</TableCell>
                 <TableCell >{item.description}</TableCell>
@@ -80,7 +80,7 @@ function ListTopic({ reLoad, onReload, setShowNotify, setMessage, setSeverity })
                     <FaEllipsisV style={{ fontSize: "16px", cursor: "pointer", }}
                       onClick={(e) => { e.stopPropagation(); toggleMenu(i) }}
                     />
-                    {openMenuIndex === i && (
+                    {openMenu === i && (
                       <div className="action-menu">
                         <button onClick={() => handleEdit(item)}>Sửa</button>
                         <button onClick={() => handleDelete(item._id)}>Xoá</button>
