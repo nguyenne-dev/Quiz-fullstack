@@ -65,9 +65,9 @@ function ListTopic({ reLoad, onReload, setShowNotify, setMessage, setSeverity })
         <Table sx={{ minWidth: 400 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: "bold" }}>Tên chủ đề</TableCell>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>Mô tả</TableCell>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>Hành động</TableCell>
+              <TableCell sx={{ fontWeight: "bold", fontSize: '20px' }}>Chủ đề</TableCell>
+              <TableCell align="center" sx={{ fontWeight: "bold", fontSize: '20px' }}>Mô tả</TableCell>
+              <TableCell align="center" sx={{ fontWeight: "bold", fontSize: '20px', width: '30px' }}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

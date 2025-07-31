@@ -90,24 +90,24 @@ export default function ListQuestion({ reLoad, onReload, setShowNotify, setMessa
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell />
-              <TableCell>Câu hỏi</TableCell>
-              <TableCell>Chủ đề</TableCell>
-              <TableCell align="right">Tùy chọn</TableCell>
+              <TableCell sx={{ width: '30px' }}/>
+              <TableCell sx={{ fontWeight:'bold', fontSize:'20px' }}>Câu hỏi</TableCell>
+              <TableCell sx={{ fontWeight:'bold', fontSize:'20px' }}>Chủ đề</TableCell>
+              <TableCell align="center" sx={{ fontWeight:'bold', fontSize:'20px' , width: '30px'}}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {questions.map((q) => (
               <React.Fragment key={q._id}>
                 <TableRow hover>
-                  <TableCell sx={{ maxWidth: "30px" }}>
+                  <TableCell sx={{ width: '30px' }}>
                     <IconButton onClick={() => setOpenRowIndex(openRowIndex === q._id ? null : q._id)}>
                       {openRowIndex === q._id ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
                     </IconButton>
                   </TableCell>
                   <TableCell>{q.question}</TableCell>
                   <TableCell>{q.topicId.title}</TableCell>
-                  <TableCell align="right">
+                  <TableCell align="center">
                     <IconButton onClick={(event) => { setItemEdit(q); setOpenMenu({ anchorEl: event.currentTarget, id: q._id }); }} >
                       <MoreVertIcon />
                     </IconButton>
@@ -119,7 +119,7 @@ export default function ListQuestion({ reLoad, onReload, setShowNotify, setMessa
                   <TableCell colSpan={4} sx={{ p: 0, paddingLeft: '10%' }}>
                     <Collapse in={openRowIndex === q._id} timeout="auto" unmountOnExit>
                       <Box sx={{ margin: 2 }}>
-                        <Typography variant="subtitle1">Các đáp án</Typography>
+                        <Typography variant="subtitle1"  sx={{ fontWeight:'bold', fontSize:'18px' }}>Các đáp án</Typography>
                         <ul>
                           {q.answers.map((a) => (
                             <li key={a.key}>
