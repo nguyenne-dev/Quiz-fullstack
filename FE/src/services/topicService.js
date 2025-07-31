@@ -1,7 +1,7 @@
-import { del, get, post, put } from "../utils/request"
+import { del, getPublic, post, put } from "../utils/request"
 
 export const getTopic = async () => {
-  const result = await get("topic");
+  const result = await getPublic("topic");
   return result;
 }
 
