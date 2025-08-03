@@ -1,7 +1,8 @@
-function AdminUser(){
-  return(
+import Users from '../../../components/admin/users'
+function AdminUser() {
+  return (
     <>
-    AdminUser
+      <Users />
     </>
   )
 }
