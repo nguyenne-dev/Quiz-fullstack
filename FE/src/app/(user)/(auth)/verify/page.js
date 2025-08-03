@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 // import { verify } from "@/services/authService";
 import "./verify.css"
-import { verify } from "../../../services/authService";
+import { verify } from "../../../../services/authService";
 
 export default function VerifyPage() {
   // const router = useRouter();

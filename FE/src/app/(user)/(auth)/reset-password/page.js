@@ -3,7 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import './rePass.css';
-import { reset_password } from "../../../services/authService";
+import { reset_password } from "../../../../services/authService";
 
 function ResetPassword() {
   const navigation = useRouter();
@@ -20,7 +20,7 @@ function ResetPassword() {
     password: "",
     rePassword: ""
   })
-  console.log(token)
+  // console.log(token)
 
   if (!token) {
     navigation.push("/login")

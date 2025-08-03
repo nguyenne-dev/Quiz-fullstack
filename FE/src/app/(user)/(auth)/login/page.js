@@ -1,8 +1,8 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import "./login.css"
-import { UserLogin } from "../../../services/authService";
+import { UserLogin } from "../../../../services/authService";
 import { useRouter } from 'next/navigation';
 import FormForGot from "./FormForGet"
 function Login() {
@@ -14,6 +14,15 @@ function Login() {
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const router = useRouter();
+
+
+  useEffect(() => {
+    const token = Cookies.get('token');
+    const _id = Cookies.get('_id');
+    if (token && _id) {
+      window.location.href = './'
+    }
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -136,7 +145,7 @@ function Login() {
 
         {/* Form quên mật khẩu */}
         {showFFG &&
-            <FormForGot setShow={setShowFFG} />
+          <FormForGot setShow={setShowFFG} />
         }
       </div>
     </>

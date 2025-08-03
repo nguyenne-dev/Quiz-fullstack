@@ -1,7 +1,14 @@
 @import "tailwindcss";
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 :root {
-  --background: #d6eaf8;;
+  --background: #d6eaf8;
+  ;
   --foreground: #2c3e50;
 }
 

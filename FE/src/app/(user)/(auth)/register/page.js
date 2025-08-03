@@ -1,8 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./register.css";
-import { send_verify_mail } from "../../../services/authService";
+import { send_verify_mail } from "../../../../services/authService";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 export default function RegisterPage() {
   const router = useRouter();
   const [isloading, setIsloading] = useState(false);
@@ -13,6 +14,12 @@ export default function RegisterPage() {
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    Cookies.remove('token');
+    Cookies.remove('_id');
+  }, []);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -23,10 +30,10 @@ export default function RegisterPage() {
     try {
       const result = await send_verify_mail(formData);
       console.log(result);
-      if(result.success){
+      if (result.success) {
         alert("Vui lòng kiểm tra email để xác nhận!");
         router.push("/verify")
-      }else{
+      } else {
         alert(`Đăng ký thất bại! Lỗi: ${result.message}`);
         setIsloading(false);
       }
@@ -35,7 +42,7 @@ export default function RegisterPage() {
       setIsloading(false);
     }
   };
-  
+
   console.log(formData)
 
   return (
@@ -53,9 +60,9 @@ export default function RegisterPage() {
         <input type="email" name="email" placeholder="Email" required onChange={handleChange} />
         <input type="password" name="password" placeholder="Mật khẩu" required onChange={handleChange} />
 
-        {!isloading?<button type="submit" className="submit-button">Đăng ký</button>:
-        <p className="submit-button" style={{ textAlign:"center", userSelect:"none", cursor:"not-allowed" }}>Loading . . .</p>}
-        
+        {!isloading ? <button type="submit" className="submit-button">Đăng ký</button> :
+          <p className="submit-button" style={{ textAlign: "center", userSelect: "none", cursor: "not-allowed" }}>Loading . . .</p>}
+
         <a href="/login">Đã có tài khoản? Đăng nhập ngay</a>
       </form>
     </div>

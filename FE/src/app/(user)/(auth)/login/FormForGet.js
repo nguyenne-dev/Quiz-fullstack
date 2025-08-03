@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { send_repass_email } from "../../../services/authService";
+import { send_repass_email } from "../../../../services/authService";
 function FormForGot({ setShow }) {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
