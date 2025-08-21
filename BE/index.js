@@ -41,11 +41,15 @@ connectDB(); // Gọi hàm kết nối DB (trong src/config/db.js)
 const authRoutes = require('./src/routes/auth.Routes');
 const topicRoutes = require('./src/routes/topic.Routes');
 const questionRoutes = require('./src/routes/question.Routes');
+const submissionRoutes = require('./src/routes/submission.Routes');
+const submissionAnswerRoutes = require('./src/routes/submissionAnswer.Routes');
 
 
 app.use('/auth', authRoutes);
 app.use('/topic', topicRoutes);
 app.use('/question', questionRoutes);
+app.use('/submission', submissionRoutes);
+app.use('/submission-answer', submissionAnswerRoutes);
 
 // TODO: Gắn router sau khi viết xong (VD: auth, quiz, user...)
 // const authRoutes = require('./src/routes/authRoutes');

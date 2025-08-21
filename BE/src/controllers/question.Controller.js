@@ -6,10 +6,10 @@ const Topic = require("../models/Topic");
 // Lấy câu hỏi theo chủ đề
 const getQuestionTopic = async (req, res) => {
   try {
-    const { topicId } = req.query;
+    const { topicId  } = req.params;
 
     // Kiểm tra thiếu topicId
-    if (!topicId) {
+    if (!topicId ) {
       return res.status(400).json({
         success: false,
         message: "Thiếu topicId"
@@ -17,12 +17,12 @@ const getQuestionTopic = async (req, res) => {
     }
 
     // Kiểm tra topicId có phải ObjectId hợp lệ không
-    if (!mongoose.Types.ObjectId.isValid(topicId)) {
+    if (!mongoose.Types.ObjectId.isValid(topicId )) {
       return res.status(400).json({ success: false, message: "topicId không hợp lệ" });
     }
 
     // Kiểm tra topicId có tồn tại không
-    const topicExists = await Topic.findById(topicId).populate("topicId", "title");
+    const topicExists = await Topic.findById(topicId );
     if (!topicExists) {
       return res.status(404).json({ success: false, message: "Không tìm thấy chủ đề" });
     }
