@@ -5,8 +5,8 @@ export const getQuestion = async () => {
   return result;
 }
 
-export const getQuestionTopic = async (id) => {
-  const result = await get(`question?topicId=${id}`);
+export const getQuestionTopic = async (topicId) => {
+  const result = await get(`question/${topicId}`);
   return result;
 }
 

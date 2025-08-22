@@ -1,15 +1,17 @@
 'use client'
 import './layout.css'
 import Cookies from 'js-cookie';
+import { FaUser } from "react-icons/fa";
 import { useEffect, useState } from 'react';
 export default function LayoutUser({ children }) {
 
   const [isLogin, setIsLogin] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const token = Cookies.get('token');
   const _id = Cookies.get('_id');
 
   useEffect(() => {
-    setIsLogin(!!token && !!_id);
+    setIsLogin(token && _id);
   }, [token, _id]);
   return (
     <>
@@ -24,26 +26,29 @@ export default function LayoutUser({ children }) {
             <ul className="nav-menu">
               <li><a href="/">Trang chủ</a></li>
               <li><a href="/topic">Danh mục</a></li>
-              <li><a href="#about">Giới thiệu</a></li>
-              <li><a href="#contact">Liên hệ</a></li>
+              <li><a href="/#about">Giới thiệu</a></li>
+              <li><a href="/#contact">Liên hệ</a></li>
             </ul>
-            <div className="hamburger" id="hamburger">
+            {/* <div className="hamburger" id="hamburger">
+             */}
+            <div
+              className={`hamburger ${isMenuOpen ? 'active' : ''}`}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
               <span></span>
               <span></span>
               <span></span>
             </div>
           </nav>
-          {!isLogin ? <a href="#" className="cta-button">Bắt đầu ngay</a> : <a href="#" className="cta-button">Đăng nhập</a>}
+          {isLogin ? <a href="/profile" className="cta-button"><FaUser style={{ fontSize: "16px" }} /></a> : <a href="/login" className="cta-button">Đăng nhập</a>}
         </div>
 
         {/* Mobile Menu */}
-        <div className="mobile-menu" id="mobileMenu">
-          <a href="#home">Trang chủ</a>
-          <a href="#features">Tính năng</a>
-          <a href="#categories">Danh mục</a>
-          <a href="#about">Giới thiệu</a>
-          <a href="#contact">Liên hệ</a>
-          <a href="#" className="mobile-cta">Bắt đầu ngay</a>
+        <div className={`mobile-menu ${isMenuOpen ? 'active' : ''}`}>
+          <a href="" onClick={() => setIsMenuOpen(false)}>Trang chủ</a>
+          <a href="/topic" onClick={() => setIsMenuOpen(false)}>Danh mục</a>
+          <a href="/#about" onClick={() => setIsMenuOpen(false)}>Giới thiệu</a>
+          <a href="/#contact" onClick={() => setIsMenuOpen(false)}>Liên hệ</a>
         </div>
       </header>
 
