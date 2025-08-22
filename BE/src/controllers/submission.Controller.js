@@ -4,10 +4,33 @@ const Question = require("../models/Question");
 
 
 // Lấy tất cả submissions (bài nộp) của người dùng đang đăng nhập
+// exports.getAllSubmissions = async (req, res) => {
+//   try {
+//     const submissions = await Submission.find({ userId: req.user.id }).populate("topicId");
+//     res.json(submissions);
+//   } catch (err) {
+//     res.status(500).json({ message: "Lỗi khi lấy submissions", error: err.message });
+//   }
+// };
+
+
+// Lấy tất cả submissions của user (kèm tổng số câu hỏi cho từng submission)
 exports.getAllSubmissions = async (req, res) => {
   try {
     const submissions = await Submission.find({ userId: req.user.id }).populate("topicId");
-    res.json(submissions);
+
+    // Dùng Promise.all để lấy thêm answers cho từng submission
+    const submissionsWithDetails = await Promise.all(
+      submissions.map(async (submission) => {
+        const answers = await SubmissionAnswer.find({ submissionId: submission._id });
+        return {
+          ...submission.toObject(),
+          totalQuestions: answers.length,
+        };
+      })
+    );
+
+    res.json(submissionsWithDetails);
   } catch (err) {
     res.status(500).json({ message: "Lỗi khi lấy submissions", error: err.message });
   }
@@ -21,21 +44,24 @@ exports.getSubmissions = async (req, res) => {
     // Tìm submission theo id
     const submission = await Submission.findById(id).populate("topicId");
     if (!submission) {
-      return res.status(404).json({success: false, message: "No.0 - Không tìm thấy" });
+      return res.status(404).json({ success: false, message: "No.0 - Không tìm thấy" });
     }
 
     // Kiểm tra quyền: submission phải thuộc về user đang đăng nhập
     if (submission.userId.toString() !== req.user.id.toString()) {
-      return res.status(403).json({success: false, message: "No.999 - Không tìm thấy" });
+      return res.status(403).json({ success: false, message: "No.999 - Không tìm thấy" });
     }
 
     // Lấy danh sách answers thuộc submission này
     const answers = await SubmissionAnswer.find({ submissionId: id })
       .populate("questionId");
 
+    const totalQuestions = answers.length;
+
     res.json({
       ...submission.toObject(),
-      answers
+      answers,
+      totalQuestions,
     });
   } catch (err) {
     res.status(500).json({ message: "Lỗi khi lấy submission", error: err.message });
