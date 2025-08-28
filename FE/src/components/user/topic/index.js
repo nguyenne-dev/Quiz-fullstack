@@ -11,12 +11,14 @@ import {
   DialogContentText,
   DialogActions,
   Button,
+  CircularProgress,
 } from "@mui/material";
 
 function PageTopic() {
   const [topic, setTopic] = useState([]);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [loading, setLoading] = useState(false); // state loading
   const router = useRouter();
 
   useEffect(() => {
@@ -48,10 +50,14 @@ function PageTopic() {
   };
 
   // Nếu xác nhận -> sang trang làm bài
-  const handleConfirm = () => {
-    setOpenConfirm(false);
-    if (selectedId) {
-      router.push(`/Question?id=${selectedId}`);
+  const handleConfirm = async () => {
+    setLoading(true); // Bật loading
+    try {
+      if (selectedId) {
+        router.push(`/Question?id=${selectedId}`);
+      }
+    } finally {
+      setOpenConfirm(false);
     }
   };
 
@@ -63,7 +69,7 @@ function PageTopic() {
             <div className="section-badge">📚 Danh mục học tập</div>
             <h2 className="section-title">Khám phá các chủ đề</h2>
             <p className="section-subtitle">
-              Từ công nghệ thông tin đến kinh doanh, chúng tôi có đầy đủ các chủ
+              Từ công nghệ thông tin chúng tôi có đầy đủ các chủ
               đề để bạn lựa chọn.
             </p>
           </div>
@@ -76,7 +82,7 @@ function PageTopic() {
               >
                 <h3 className="category-title">{item.title}</h3>
                 <p className="category-count">
-                  {item.questionCount}+ câu hỏi
+                  {item?.questionCount} câu hỏi
                 </p>
                 <p className="category-description">{item.description}</p>
               </div>
@@ -88,7 +94,7 @@ function PageTopic() {
       {/* Dialog xác nhận */}
       <Dialog
         open={openConfirm}
-        onClose={() => setOpenConfirm(false)}
+        onClose={() => !loading && setOpenConfirm(false)}
         aria-labelledby="confirm-dialog-title"
       >
         <DialogTitle id="confirm-dialog-title">
@@ -96,13 +102,29 @@ function PageTopic() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Bạn có chắc chắn muốn bắt đầu làm bài thi cho chủ đề này không?
+            {loading
+              ? "Đang tải bài làm, vui lòng chờ..."
+              : "Bạn có chắc chắn muốn bắt đầu làm bài thi cho chủ đề này không?"}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
-          <Button onClick={handleConfirm} variant="contained" color="primary">
-            Đồng ý
+          <Button onClick={() => setOpenConfirm(false)} disabled={loading}>
+            Hủy
+          </Button>
+          <Button
+            onClick={handleConfirm}
+            variant="contained"
+            color="primary"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
+                Đang tải...
+              </>
+            ) : (
+              "Đồng ý"
+            )}
           </Button>
         </DialogActions>
       </Dialog>
