@@ -3,18 +3,6 @@ const SubmissionAnswer = require("../models/SubmissionAnswer");
 const Question = require("../models/Question");
 
 
-// Lấy tất cả submissions (bài nộp) của người dùng đang đăng nhập
-// exports.getAllSubmissions = async (req, res) => {
-//   try {
-//     const submissions = await Submission.find({ userId: req.user.id }).populate("topicId");
-//     res.json(submissions);
-//   } catch (err) {
-//     res.status(500).json({ message: "Lỗi khi lấy submissions", error: err.message });
-//   }
-// };
-
-
-// Lấy tất cả submissions của user (kèm tổng số câu hỏi cho từng submission)
 exports.getAllSubmissions = async (req, res) => {
   try {
     const submissions = await Submission.find({ userId: req.user.id }).populate("topicId");
@@ -36,37 +24,59 @@ exports.getAllSubmissions = async (req, res) => {
   }
 };
 
-// Lấy chi tiết 1 submission theo id (kèm danh sách answers)
+// Lấy chi tiết 1 submission theo id
 exports.getSubmissions = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Tìm submission theo id
-    const submission = await Submission.findById(id).populate("topicId");
+    // Lấy submission kèm topic (_id, title)
+    const submission = await Submission.findById(id)
+      .populate("topicId", "_id title");
+
     if (!submission) {
-      return res.status(404).json({ success: false, message: "No.0 - Không tìm thấy" });
+      return res.status(404).json({ success: false, message: "Không tìm thấy submission" });
     }
 
-    // Kiểm tra quyền: submission phải thuộc về user đang đăng nhập
+    // Kiểm tra quyền sở hữu submission
     if (submission.userId.toString() !== req.user.id.toString()) {
-      return res.status(403).json({ success: false, message: "No.999 - Không tìm thấy" });
+      return res.status(403).json({ success: false, message: "Không có quyền truy cập" });
     }
 
-    // Lấy danh sách answers thuộc submission này
-    const answers = await SubmissionAnswer.find({ submissionId: id })
-      .populate("questionId");
+    // Lấy answers của submission này, populate thêm thông tin question
+    const submissionAnswers = await SubmissionAnswer.find({ submissionId: id })
+      .populate("questionId", "question answers correctAnswer");
+    // question: nội dung câu hỏi, answers: các đáp án, correctAnswer: đáp án đúng
 
-    const totalQuestions = answers.length;
+    // Format lại dữ liệu
+    const answers = submissionAnswers.map(ans => ({
+      questionId: ans.questionId._id,
+      selectedAnswer: ans.selectedAnswer,
+    }));
+
+    const questions = submissionAnswers.map(ans => ({
+      _id: ans.questionId._id,
+      question: ans.questionId.question,
+      answers: ans.questionId.answers,
+      correctAnswer: ans.correctAnswer,
+      selectedAnswer: ans.selectedAnswer,
+      isCorrect: ans.isCorrect,
+    }));
 
     res.json({
-      ...submission.toObject(),
-      answers,
-      totalQuestions,
+      _id: submission._id,
+      startedAt: submission.startedAt,
+      submittedAt: submission.submittedAt,
+      topicId: submission.topicId._id,
+      topicTitle: submission.topicId.title,
+      questions,
+      score: submission.score,
+      totalQuestions: submissionAnswers.length,
     });
   } catch (err) {
     res.status(500).json({ message: "Lỗi khi lấy submission", error: err.message });
   }
 };
+
 
 // Tạo submission mới (nộp bài)
 exports.createSubmission = async (req, res) => {
