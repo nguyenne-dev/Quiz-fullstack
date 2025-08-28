@@ -5,6 +5,11 @@ export const getSubmission = async () => {
   return result;
 }
 
+export const getSubmissionById = async (id) => {
+  const result = await get(`submission/${id}`);
+  return result;
+}
+
 export const createSubmission = async (option) => {
   const result = await post("submission", option);
   return result;

@@ -1,12 +1,12 @@
-import { del, get, patch, post } from "../utils/request";
+import { del, getPublic, patch, post } from "../utils/request";
 
 export const getQuestion = async () => {
-  const result = await get("question/all");
+  const result = await getPublic("question/all");
   return result;
 }
 
 export const getQuestionTopic = async (topicId) => {
-  const result = await get(`question/${topicId}`);
+  const result = await getPublic(`question/${topicId}`);
   return result;
 }
 
