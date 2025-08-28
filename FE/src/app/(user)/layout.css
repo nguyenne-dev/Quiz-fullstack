@@ -1,4 +1,4 @@
-/* Header */
+/*  HEADER  */
 .header {
   position: sticky;
   top: 0;
@@ -20,6 +20,7 @@
   height: 70px;
 }
 
+/* Logo */
 .logo {
   display: flex;
   align-items: center;
@@ -42,12 +43,43 @@
   font-size: 20px;
 }
 
+/*  NAVIGATION MENU  */
 .nav-menu {
   display: flex;
   list-style: none;
   gap: 30px;
 }
 
+.nav-menu a {
+  text-decoration: none;
+  color: #374151;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  position: relative;
+  padding: 8px 12px;
+}
+
+/* Hover underline effect */
+.nav-menu a:hover {
+  color: #2563eb;
+}
+
+.nav-menu a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -5px;
+  left: 0;
+  background: #2563eb;
+  transition: width 0.3s ease;
+}
+
+.nav-menu a:hover::after {
+  width: 100%;
+}
+
+/*  HAMBURGER (MOBILE)  */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -65,6 +97,7 @@
   border-radius: 2px;
 }
 
+/* Hiệu ứng khi mở menu */
 .hamburger.active span:nth-child(1) {
   transform: rotate(45deg) translate(6px, 6px);
 }
@@ -77,6 +110,7 @@
   transform: rotate(-45deg) translate(6px, -6px);
 }
 
+/*  MOBILE MENU  */
 .mobile-menu {
   position: fixed;
   top: 70px;
@@ -123,33 +157,7 @@
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
-.nav-menu a {
-  text-decoration: none;
-  color: #374151;
-  font-weight: 500;
-  transition: color 0.3s ease;
-  position: relative;
-}
-
-.nav-menu a:hover {
-  color: #2563eb;
-}
-
-.nav-menu a::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: -5px;
-  left: 0;
-  background: #2563eb;
-  transition: width 0.3s ease;
-}
-
-.nav-menu a:hover::after {
-  width: 100%;
-}
-
+/*  CTA BUTTON (Đăng nhập...)  */
 .cta-button {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -162,13 +170,11 @@
 }
 
 .cta-button:hover {
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, #4662db 0%, #7345a1 100%);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
-/* End Header */
-
-/* Footer */
+/*  FOOTER  */
 .footer {
   background: #111827;
   color: white;
@@ -192,7 +198,6 @@
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 20px;
-  /* text-align: center; */
   color: #f9fafb;
 }
 
@@ -208,7 +213,6 @@
   color: #d1d5db;
   text-decoration: none;
   transition: color 0.3s ease;
-  text-align: left;
 }
 
 .footer-section ul li a:hover {
@@ -222,24 +226,7 @@
   color: #9ca3af;
 }
 
-/* Responsive Design */
-.section-badge {
-  display: inline-block;
-  background: #e0e7ff;
-  color: #4f46e5;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 20px;
-}
-
-.section-header {
-  text-align: center;
-  margin-bottom: 60px;
-  animation: fadeInUp 1s ease both;
-}
-
+/*  RESPONSIVE  */
 @media (max-width: 768px) {
   .nav-menu {
     display: none;
@@ -256,10 +243,6 @@
   .footer-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 30px;
-  }
-
-  .section-header {
-    margin-bottom: 40px;
   }
 }
 
@@ -284,4 +267,66 @@
   }
 }
 
-/* End Responsive Design */
+/*  USER MENU DROPDOWN  */
+.user-menu-container {
+  position: relative;
+  display: inline-block;
+}
+
+.user-button {
+  cursor: pointer;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  min-width: 180px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+
+  /* Hiệu ứng xuất hiện */
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.2s ease-in-out;
+}
+
+.user-dropdown.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.user-dropdown a,
+.user-dropdown button {
+  padding: 10px 15px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+}
+
+.user-dropdown a:hover,
+.user-dropdown button:hover {
+  background: #f5f5f5;
+}
+
+.user-dropdown hr {
+  margin: 8px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+/*  ACTIVE STATE  */
+.nav-menu a.active,
+.mobile-menu a.active,
+.user-dropdown a.active {
+  color: #0070f3;
+  font-weight: bold;
+  border-bottom: 2px solid #0070f3;
+}

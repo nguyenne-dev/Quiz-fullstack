@@ -2,17 +2,42 @@
 import './layout.css'
 import Cookies from 'js-cookie';
 import { FaUser } from "react-icons/fa";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 export default function LayoutUser({ children }) {
 
   const [isLogin, setIsLogin] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const token = Cookies.get('token');
   const _id = Cookies.get('_id');
+  const userMenuRef = useRef(null);
+
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+
+  const pathname = usePathname(); // Lấy đường dẫn /URL
 
   useEffect(() => {
     setIsLogin(token && _id);
   }, [token, _id]);
+
+  // 👉 Hàm logout
+  const handleLogout = () => {
+    Cookies.remove('token');
+    Cookies.remove('_id');
+    window.location.href = '/login';
+  };
+
+  // 👉 Đóng dropdown khi click ra ngoài
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <>
       {/* Header */}
@@ -24,13 +49,19 @@ export default function LayoutUser({ children }) {
           </a>
           <nav>
             <ul className="nav-menu">
-              <li><a href="/">Trang chủ</a></li>
-              <li><a href="/topic">Danh mục</a></li>
-              <li><a href="/#about">Giới thiệu</a></li>
-              <li><a href="/#contact">Liên hệ</a></li>
+              <li>
+                <a href="/" className={pathname === "/" ? "active" : ""}>Trang chủ</a>
+              </li>
+              <li>
+                <a href="/topic" className={pathname.startsWith("/topic") ? "active" : ""}>Danh mục</a>
+              </li>
+              <li>
+                <a href="/#about" className={pathname.includes("#about") ? "active" : ""}>Giới thiệu</a>
+              </li>
+              <li>
+                <a href="/#contact" className={pathname.includes("#contact") ? "active" : ""}>Liên hệ</a>
+              </li>
             </ul>
-            {/* <div className="hamburger" id="hamburger">
-             */}
             <div
               className={`hamburger ${isMenuOpen ? 'active' : ''}`}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -40,12 +71,33 @@ export default function LayoutUser({ children }) {
               <span></span>
             </div>
           </nav>
-          {isLogin ? <a href="/profile" className="cta-button"><FaUser style={{ fontSize: "16px" }} /></a> : <a href="/login" className="cta-button">Đăng nhập</a>}
+          {isLogin ?
+            <div className="user-menu-container" ref={userMenuRef}>
+              <button
+                className="cta-button user-button"
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              >
+                <FaUser style={{ fontSize: "16px" }} />
+              </button>
+
+              {isUserMenuOpen && (
+                <div className={`user-dropdown ${isUserMenuOpen ? "show" : ""}`}>
+                  <a href="/profile">Trang cá nhân</a>
+                  <a href="/submissions">Danh sách bài làm</a>
+                  <hr />
+                  <button onClick={handleLogout}>Đăng xuất</button>
+                </div>
+              )}
+            </div>
+            :
+            <a href="/login" className="cta-button">Đăng nhập</a>
+          }
+
         </div>
 
         {/* Mobile Menu */}
         <div className={`mobile-menu ${isMenuOpen ? 'active' : ''}`}>
-          <a href="" onClick={() => setIsMenuOpen(false)}>Trang chủ</a>
+          <a href="./" onClick={() => setIsMenuOpen(false)}>Trang chủ</a>
           <a href="/topic" onClick={() => setIsMenuOpen(false)}>Danh mục</a>
           <a href="/#about" onClick={() => setIsMenuOpen(false)}>Giới thiệu</a>
           <a href="/#contact" onClick={() => setIsMenuOpen(false)}>Liên hệ</a>
