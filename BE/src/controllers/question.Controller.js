@@ -28,7 +28,7 @@ const getQuestionTopic = async (req, res) => {
     }
 
     // Lấy danh sách câu hỏi theo topic
-    const questions = await Question.find({ topicId });
+    const questions = await Question.find({ topicId }).populate("topicId", "title");
 
     return res.status(200).json({ success: true, message: "Lấy dữ liệu thành công", questions });
 
