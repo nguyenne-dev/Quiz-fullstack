@@ -11,7 +11,7 @@ import EditQuestion from './EditQuestion';
 export default function ListQuestion({ reLoad, onReload, setShowNotify, setMessage, setSeverity }) {
   const [openMenu, setOpenMenu] = useState(null); // { anchorEl, id }
   const [openRowIndex, setOpenRowIndex] = useState(null);
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState(null);
   const [showFormEdit, setShowFormEdit] = useState(false);
   const [itemEdit, setItemEdit] = useState({});
 
@@ -21,6 +21,7 @@ export default function ListQuestion({ reLoad, onReload, setShowNotify, setMessa
     const fetchApi = async () => {
       const result = await getQuestion();
       setQuestions(result.questions);
+      console.log("Kết quả là: ", result)
     };
     fetchApi();
   }, [reLoad]);
@@ -73,6 +74,7 @@ export default function ListQuestion({ reLoad, onReload, setShowNotify, setMessa
   };
 
 
+  // console.log(questions);
   return (
     <>
       {showFormEdit && <EditQuestion onClose={() => setShowFormEdit(false)} item={itemEdit} onReload={() => onReload()} setShowNotify={setShowNotify} setMessage={setMessage} setSeverity={setSeverity} />}
@@ -97,7 +99,7 @@ export default function ListQuestion({ reLoad, onReload, setShowNotify, setMessa
             </TableRow>
           </TableHead>
           <TableBody>
-            {questions.map((q) => (
+            {questions?.map((q) => (
               <React.Fragment key={q._id}>
                 <TableRow hover>
                   <TableCell sx={{ width: '30px' }}>

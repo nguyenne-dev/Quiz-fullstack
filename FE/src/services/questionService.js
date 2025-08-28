@@ -1,7 +1,7 @@
-import { del, getPublic, patch, post } from "../utils/request";
+import { del, get, getPublic, patch, post } from "../utils/request";
 
 export const getQuestion = async () => {
-  const result = await getPublic("question/all");
+  const result = await get("question/all");
   return result;
 }
 
