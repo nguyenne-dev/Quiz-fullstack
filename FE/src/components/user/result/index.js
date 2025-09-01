@@ -16,7 +16,9 @@ function KetQuaBaiLam() {
     const fetchApi = async () => {
       try {
         const data = await getSubmissionById(id);
-        setResult(data);
+        if (data.success) {
+          setResult(data.data);
+        }
         console.log("API trả về:", data);
       } catch (error) {
         console.error("Error fetching submission:", error);
@@ -54,7 +56,7 @@ function KetQuaBaiLam() {
     );
   }
 
-  if (!result) {
+  if (result.length === 0) {
     return (
       <div className="result-container">
         <div className="error">
