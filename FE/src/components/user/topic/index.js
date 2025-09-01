@@ -18,13 +18,12 @@ function PageTopic() {
   const [topic, setTopic] = useState([]);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const [loading, setLoading] = useState(false); // state loading
+  const [loading, setLoading] = useState(true); // state loading
   const router = useRouter();
 
   useEffect(() => {
     const fetchApi = async () => {
       const result = await getTopic();
-
       // Lấy tổng số câu hỏi cho từng topic
       const topicsWithCount = await Promise.all(
         result.topics.map(async (item) => {
@@ -39,6 +38,7 @@ function PageTopic() {
 
       // Chỉ giữ topic có questionCount > 0
       setTopic(topicsWithCount.filter((t) => t.questionCount > 0));
+      setLoading(false);
     };
     fetchApi();
   }, []);
@@ -128,14 +128,7 @@ function PageTopic() {
             color="primary"
             disabled={loading}
           >
-            {loading ? (
-              <>
-                <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
-                Đang tải...
-              </>
-            ) : (
-              "Đồng ý"
-            )}
+            Đồng ý
           </Button>
         </DialogActions>
       </Dialog>
