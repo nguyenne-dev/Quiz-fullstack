@@ -19,7 +19,7 @@ function KetQuaBaiLam() {
         if (data.success) {
           setResult(data.data);
         }
-        console.log("API trả về:", data);
+        // console.log("API trả về:", data);
       } catch (error) {
         console.error("Error fetching submission:", error);
       } finally {
