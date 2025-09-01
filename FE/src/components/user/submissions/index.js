@@ -14,10 +14,10 @@ export default function LichSuLam() {
       const result = await getSubmission();
       setDataGet(result.data);
       setLoading(false);
-      // console.log(result);
     };
     fetchApi();
   }, []);
+  // console.log(dataGet);
 
   const getDuration = (start, end) => {
     const diff = new Date(end) - new Date(start);
@@ -110,7 +110,7 @@ export default function LichSuLam() {
                 <div className="detail-label">Thời gian</div>
               </div>
               <div className="detail-item">
-                <div className="detail-value">{getRank(item.score / item.totalQuestions)}</div>
+                <div className={`detail-value ${getScoreClass(item.score / item.totalQuestions)}`}>{getRank(item.score / item.totalQuestions)}</div>
                 <div className="detail-label">Xếp loại</div>
               </div>
             </div>
@@ -129,7 +129,7 @@ export default function LichSuLam() {
                 className="btn btn-secondary"
                 onClick={(e) => {
                   e.stopPropagation();
-                  router.push(`/Question?id=${item.topicId._id}`);
+                  router.push(`/Question?id=${item.topicId}`);
                 }}
               >
                 Làm lại
