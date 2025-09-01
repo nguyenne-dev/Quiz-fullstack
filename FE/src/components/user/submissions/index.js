@@ -6,13 +6,15 @@ import './LichSuLam.css';
 
 export default function LichSuLam() {
   const [dataGet, setDataGet] = useState([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const fetchApi = async () => {
       const result = await getSubmission();
-      setDataGet(result);
-      console.log(result);
+      setDataGet(result.data);
+      setLoading(false);
+      // console.log(result);
     };
     fetchApi();
   }, []);
@@ -44,6 +46,18 @@ export default function LichSuLam() {
     ? Math.round(dataGet.reduce((a, b) => a + b.score, 0) / totalSubmissions)
     : 0;
 
+
+  if (loading) {
+    return (
+      <div className="result-container">
+        <div className="loading">
+          <div className="spinner"></div>
+          <p>Đang tải lịch sử...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="history-container">
       <div className="title">Lịch Sử Làm Bài</div>
@@ -64,8 +78,8 @@ export default function LichSuLam() {
           <div key={item._id} className="history-card">
             <div className="item-header">
               <div>
-                <div className="topic-title">{item.topicId?.title}</div>
-                <div className="subject">{item.topicId?.description || 'Chưa dữ liệu'}</div>
+                <div className="topic-title">{item.topicTitle}</div>
+                <div className="subject">{item.topicDescription || 'Chưa dữ liệu'}</div>
               </div>
               <div className="date-text">
                 {new Date(item.submittedAt).toLocaleDateString()} - {new Date(item.submittedAt).toLocaleTimeString()}
@@ -86,7 +100,7 @@ export default function LichSuLam() {
                 <div className="detail-label">Thời gian</div>
               </div>
               <div className="detail-item">
-                <div className="detail-value">{getRank(item.score/item.totalQuestions)}</div>
+                <div className="detail-value">{getRank(item.score / item.totalQuestions)}</div>
                 <div className="detail-label">Xếp loại</div>
               </div>
             </div>
