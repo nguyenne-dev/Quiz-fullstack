@@ -63,15 +63,19 @@ exports.getSubmissions = async (req, res) => {
     }));
 
     res.json({
-      _id: submission._id,
-      startedAt: submission.startedAt,
-      submittedAt: submission.submittedAt,
-      topicId: submission.topicId._id,
-      topicTitle: submission.topicId.title,
-      questions,
-      score: submission.score,
-      totalQuestions: submissionAnswers.length,
+      success: true,
+      data: {
+        _id: submission._id,
+        startedAt: submission.startedAt,
+        submittedAt: submission.submittedAt,
+        topicId: submission.topicId._id,
+        topicTitle: submission.topicId.title,
+        questions,
+        score: submission.score,
+        totalQuestions: submissionAnswers.length,
+      },
     });
+
   } catch (err) {
     res.status(500).json({ message: "Lỗi khi lấy submission", error: err.message });
   }
