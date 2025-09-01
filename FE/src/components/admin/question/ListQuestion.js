@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { deleteQuestion, getQuestion } from "../../../services/questionService";
+import { deleteQuestion, getQuestion, getQuestionTopic } from "../../../services/questionService";
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, IconButton, Collapse, Box, Typography, Menu, MenuItem,
-  Dialog, DialogTitle, DialogActions, Button
+  Dialog, DialogTitle, DialogActions, Button,
+  TextField
 } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp, MoreVert as MoreVertIcon } from '@mui/icons-material';
 import EditQuestion from './EditQuestion';
+import { getTopic } from '../../../services/topicService';
 
 export default function ListQuestion({ reLoad, onReload, setShowNotify, setMessage, setSeverity }) {
   const [openMenu, setOpenMenu] = useState(null); // { anchorEl, id }
@@ -15,21 +17,39 @@ export default function ListQuestion({ reLoad, onReload, setShowNotify, setMessa
   const [showFormEdit, setShowFormEdit] = useState(false);
   const [itemEdit, setItemEdit] = useState({});
 
+  const [topics, setTopics] = useState(null);
+  const [selectTopic, setSelectTopic] = useState("ALL");
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+
+
+
+  const handleChange = (event) => {
+    setSelectTopic(event.target.value);
+    // console.log(event.target.value)
+  };
 
   useEffect(() => {
     const fetchApi = async () => {
-      const result = await getQuestion();
-      setQuestions(result.questions);
-      console.log("Kết quả là: ", result)
+      const result = await getTopic();
+      // console.log(result);
+      setTopics(result.topics);
+    }; fetchApi();
+  }, [])
+
+
+  useEffect(() => {
+    const fetchApi = async () => {
+      if (selectTopic === "ALL") {
+        const result = await getQuestion();
+        setQuestions(result.questions);
+      }
+      else {
+        const result = await getQuestionTopic(selectTopic);
+        setQuestions(result.questions);
+      }
     };
     fetchApi();
-  }, [reLoad]);
-
-  const handleEdit = (id) => {
-    console.log("Sửa câu hỏi:", id);
-    // TODO: mở form sửa
-  };
+  }, [reLoad, selectTopic]);
 
   const handleDelete = (id) => {
     // console.log("Xoá câu hỏi:", id);
@@ -74,9 +94,34 @@ export default function ListQuestion({ reLoad, onReload, setShowNotify, setMessa
   };
 
 
-  // console.log(questions);
   return (
     <>
+      <Box
+        component="form"
+        sx={{ "& .MuiTextField-root": { m: 1, width: "25ch" } }}
+        noValidate
+        autoComplete="off"
+      >
+        <div>
+          <TextField
+            id="outlined-select-topic"
+            select
+            label="Chủ đề"
+            value={selectTopic}
+            onChange={handleChange}
+          >
+            <MenuItem value="ALL">Tất cả</MenuItem>
+            {topics?.map((option) => (
+              <MenuItem key={option._id} value={option._id}>
+                {option.title}
+              </MenuItem>
+            ))}
+          </TextField>
+        </div>
+      </Box>
+
+
+
       {showFormEdit && <EditQuestion onClose={() => setShowFormEdit(false)} item={itemEdit} onReload={() => onReload()} setShowNotify={setShowNotify} setMessage={setMessage} setSeverity={setSeverity} />}
       <Dialog open={confirmDeleteId ? true : false} onClose={() => setConfirmDeleteId(null)}>
         <DialogTitle>Bạn có chắc chắn muốn xoá câu hỏi này?</DialogTitle>
@@ -92,10 +137,10 @@ export default function ListQuestion({ reLoad, onReload, setShowNotify, setMessa
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ width: '30px' }}/>
-              <TableCell sx={{ fontWeight:'bold', fontSize:'20px' }}>Câu hỏi</TableCell>
-              <TableCell sx={{ fontWeight:'bold', fontSize:'20px' }}>Chủ đề</TableCell>
-              <TableCell align="center" sx={{ fontWeight:'bold', fontSize:'20px' , width: '30px'}}></TableCell>
+              <TableCell sx={{ width: '30px' }} />
+              <TableCell sx={{ fontWeight: 'bold', fontSize: '20px' }}>Câu hỏi</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', fontSize: '20px' }}>Chủ đề</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '20px', width: '30px' }}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -121,7 +166,7 @@ export default function ListQuestion({ reLoad, onReload, setShowNotify, setMessa
                   <TableCell colSpan={4} sx={{ p: 0, paddingLeft: '10%' }}>
                     <Collapse in={openRowIndex === q._id} timeout="auto" unmountOnExit>
                       <Box sx={{ margin: 2 }}>
-                        <Typography variant="subtitle1"  sx={{ fontWeight:'bold', fontSize:'18px' }}>Các đáp án</Typography>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '18px' }}>Các đáp án</Typography>
                         <ul>
                           {q.answers.map((a) => (
                             <li key={a.key}>
