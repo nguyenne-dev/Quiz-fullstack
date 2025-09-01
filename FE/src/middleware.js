@@ -6,7 +6,7 @@ export async function middleware(request) {
   const pathname = request.nextUrl.pathname;
 
   // Các route yêu cầu đăng nhập
-const protectedRoutes = ['/profile', '/admin', '/Question'];
+const protectedRoutes = ['/profile', '/admin', '/Question', '/submissions'];
 
   const isProtected = protectedRoutes.some((route) =>
     pathname.startsWith(route)
@@ -56,5 +56,5 @@ const protectedRoutes = ['/profile', '/admin', '/Question'];
 
 // Các route áp dụng middleware
 export const config = {
-  matcher: ['/profile/:path*', '/Question/:path*', '/admin/:path*'],
+  matcher: ['/profile/:path*', '/Question/:path*', '/submissions/:path*', '/admin/:path*'],
 };
