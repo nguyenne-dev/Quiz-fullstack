@@ -26,6 +26,7 @@ export default function LichSuLam() {
     return `${minutes} phút ${seconds} giây`;
   };
 
+  // CSS theo điểm
   const getScoreClass = (score) => {
     if (score >= 0.90) return 'score-excellent';
     if (score >= 0.75) return 'score-good';
@@ -33,6 +34,7 @@ export default function LichSuLam() {
     return 'score-poor';
   };
 
+  // Xếp loại
   const getRank = (score) => {
     if (score >= 0.90) return 'Xuất sắc';
     if (score >= 0.75) return 'Tốt';
@@ -42,8 +44,16 @@ export default function LichSuLam() {
 
   // Stats
   const totalSubmissions = dataGet.length;
-  const averageScore = totalSubmissions
-    ? Math.round(dataGet.reduce((a, b) => a + b.score, 0) / totalSubmissions)
+
+  // Tổng câu đúng
+  const totalCorrect = dataGet.reduce((sum, item) => sum + item.score, 0);
+
+  // Tổng câu đã làm
+  const totalQuestions = dataGet.reduce((sum, item) => sum + item.totalQuestions, 0);
+
+  // Tỉ lệ đúng trung bình
+  const averageScore = totalQuestions
+    ? Math.round((totalCorrect / totalQuestions) * 100)
     : 0;
 
 
@@ -88,7 +98,7 @@ export default function LichSuLam() {
 
             <div className="details-grid">
               <div className="detail-item">
-                <div className={`detail-value ${getScoreClass(item.score)}`}>{item.score / item.totalQuestions * 100}%</div>
+                <div className={`detail-value ${getScoreClass(item.score / item.totalQuestions)}`}>{item.score / item.totalQuestions * 100}%</div>
                 <div className="detail-label">Tỉ lệ</div>
               </div>
               <div className="detail-item">
