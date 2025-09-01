@@ -1,81 +1,120 @@
 'use client';
 import { useEffect, useState } from "react";
 import { getSubmission } from "../../../services/submissionService";
-import {
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  Box,
-  Grow
-} from "@mui/material";
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import './LichSuLam.css';
 import { useRouter } from "next/navigation";
+import './LichSuLam.css';
 
-function LichSuLam() {
+export default function LichSuLam() {
   const [dataGet, setDataGet] = useState([]);
   const router = useRouter();
+
   useEffect(() => {
     const fetchApi = async () => {
       const result = await getSubmission();
       setDataGet(result);
-      console.log(result)
+      console.log(result);
     };
     fetchApi();
   }, []);
 
   const getDuration = (start, end) => {
     const diff = new Date(end) - new Date(start);
-    const seconds = Math.floor(diff / 1000);
-    return `${seconds} giây`;
+    const minutes = Math.floor(diff / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+    return `${minutes} phút ${seconds} giây`;
   };
 
+  const getScoreClass = (score) => {
+    if (score >= 0.90) return 'score-excellent';
+    if (score >= 0.75) return 'score-good';
+    if (score >= 0.50) return 'score-average';
+    return 'score-poor';
+  };
+
+  const getRank = (score) => {
+    if (score >= 0.90) return 'Xuất sắc';
+    if (score >= 0.75) return 'Tốt';
+    if (score >= 0.50) return 'Trung bình';
+    return 'Kém';
+  };
+
+  // Stats
+  const totalSubmissions = dataGet.length;
+  const averageScore = totalSubmissions
+    ? Math.round(dataGet.reduce((a, b) => a + b.score, 0) / totalSubmissions)
+    : 0;
+
   return (
-    <Box className="history-container">
-      <Typography variant="h5" align="center" gutterBottom className="title">
-        📘 Lịch sử làm bài
-      </Typography>
+    <div className="history-container">
+      <div className="title">Lịch Sử Làm Bài</div>
 
-      <Grid container spacing={3}>
-        {dataGet.map((item) => (
-          <Grid item xs={12} sm={6} md={4} key={item._id}>
-            <Grow in timeout={500}>
-              <Card className="history-card" onClick={() => router.push(`/result?id=${item._id}`)}>
-                <CardContent>
-                  <Typography className="topic-title">
-                    {item.topicId?.title}
-                  </Typography>
+      <div className="stats-grid">
+        <div className="stat-card">
+          <div className="stat-number">{totalSubmissions}</div>
+          <div className="stat-label">Tổng bài làm</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-number">{averageScore}%</div>
+          <div className="stat-label">Tỉ lệ đúng trung bình</div>
+        </div>
+      </div>
 
-                  <Typography className="info-text">
-                    <CheckCircleIcon fontSize="small" color="success" />
-                    Số câu đúng: <strong>{item.score}/{item.totalQuestions}</strong>
-                  </Typography>
+      <div className="history-list">
+        {dataGet.map(item => (
+          <div key={item._id} className="history-card">
+            <div className="item-header">
+              <div>
+                <div className="topic-title">{item.topicId?.title}</div>
+                <div className="subject">{item.topicId?.description || 'Chưa dữ liệu'}</div>
+              </div>
+              <div className="date-text">
+                {new Date(item.submittedAt).toLocaleDateString()} - {new Date(item.submittedAt).toLocaleTimeString()}
+              </div>
+            </div>
 
-                  <Typography className="info-text">
-                    <AccessTimeIcon fontSize="small" color="info" />
-                    Thời gian làm: {getDuration(item.startedAt, item.submittedAt)}
-                  </Typography>
+            <div className="details-grid">
+              <div className="detail-item">
+                <div className={`detail-value ${getScoreClass(item.score)}`}>{item.score / item.totalQuestions * 100}%</div>
+                <div className="detail-label">Tỉ lệ</div>
+              </div>
+              <div className="detail-item">
+                <div className="detail-value">{item.score}/{item.totalQuestions}</div>
+                <div className="detail-label">Câu đúng</div>
+              </div>
+              <div className="detail-item">
+                <div className="detail-value">{getDuration(item.startedAt, item.submittedAt)}</div>
+                <div className="detail-label">Thời gian</div>
+              </div>
+              <div className="detail-item">
+                <div className="detail-value">{getRank(item.score/item.totalQuestions)}</div>
+                <div className="detail-label">Xếp loại</div>
+              </div>
+            </div>
 
-                  <Typography className="info-text">
-                    <AssignmentTurnedInIcon fontSize="small" />
-                    Bắt đầu: {new Date(item.startedAt).toLocaleString()}
-                  </Typography>
+            <div className="actions">
+              <button
+                className="btn btn-primary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(`/result?id=${item._id}`);
+                }}
+              >
+                Xem chi tiết
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(`/Question?id=${item.topicId._id}`);
+                }}
+              >
+                Làm lại
+              </button>
+            </div>
 
-                  <Typography className="info-text">
-                    <AssignmentTurnedInIcon fontSize="small" />
-                    Nộp bài: {new Date(item.submittedAt).toLocaleString()}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grow>
-          </Grid>
+          </div>
         ))}
-      </Grid>
-    </Box>
+      </div>
+    </div>
   );
 }
-
-export default LichSuLam;
