@@ -202,6 +202,48 @@ const updateUser = async (req, res) => {
   }
 };
 
+const status = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { status } = req.body;
+    const validStatus = ["ACTIVE", "INACTIVE", "BANNED"];
+    if (!validStatus.includes(status)) {
+      return res.status(400).json({ success: false, message: "Trạng thái không hợp lệ, chỉ có thể là ACTIVE - INACTIVE - BANNED" });
+    }
+    const updateUser = await User.findByIdAndUpdate(userId, { status }, { new: true }).select("-password");
+    if (updateUser) {
+      res.json({ success: true, message: "Cập nhật thành công", updateUser });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error", error });
+  }
+};
+
+const role = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { role } = req.body;
+    const validate = ["USER", "ADMIN"];
+    if (!validate.includes(role)) {
+      return res.status(400).json({ success: false, message: "Chức vụ không hợp lệ, chỉ có thể là User hoặc ADMIN" })
+    }
+    const updatedUser = await User.findByIdAndUpdate(userId, { role }, { new: true });
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "Người dùng không tồn tại"
+      });
+    }
+    if (updatedUser)
+      return res.status(200).json({ success: true, message: "Cập nhật chức vụ thành công", updatedUser })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error", error });
+  }
+};
+
+
 const checkAuth = async (req, res) => {
   try {
     const { token, _id } = req.body;
@@ -301,4 +343,6 @@ module.exports = {
   updateUser,
   sendResetPasswordEmail,
   rePass,
+  status,
+  role, //Chỉ admin
 };
