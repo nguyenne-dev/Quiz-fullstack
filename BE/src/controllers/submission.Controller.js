@@ -5,24 +5,42 @@ const Question = require("../models/Question");
 
 exports.getAllSubmissions = async (req, res) => {
   try {
-    const submissions = await Submission.find({ userId: req.user.id }).populate("topicId");
+    // Lấy submissions theo userId và sort theo submittedAt giảm dần
+    const submissions = await Submission.find({ userId: req.user.id })
+      .populate("topicId", "_id title description") // Lấy tiêu đề + mô tả
+      .sort({ submittedAt: -1 }); // -1 : mới nhất trước
 
-    // Dùng Promise.all để lấy thêm answers cho từng submission
+    // Gắn thêm totalQuestions cho từng submission
     const submissionsWithDetails = await Promise.all(
       submissions.map(async (submission) => {
         const answers = await SubmissionAnswer.find({ submissionId: submission._id });
+
         return {
-          ...submission.toObject(),
+          _id: submission._id,
+          startedAt: submission.startedAt,
+          submittedAt: submission.submittedAt,
+          score: submission.score,
           totalQuestions: answers.length,
+          topicId: submission.topicId?._id || "",
+          topicTitle: submission.topicId?.title || "",
+          topicDescription: submission.topicId?.description || "",
         };
       })
     );
 
-    res.json(submissionsWithDetails);
+    res.json({
+      success: true,
+      data: submissionsWithDetails,
+    });
   } catch (err) {
-    res.status(500).json({ message: "Lỗi khi lấy submissions", error: err.message });
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi lấy submissions",
+      error: err.message,
+    });
   }
 };
+
 
 // Lấy chi tiết 1 submission theo id
 exports.getSubmissions = async (req, res) => {
