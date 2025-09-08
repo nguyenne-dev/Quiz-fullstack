@@ -35,12 +35,22 @@ export const send_repass_email = async (option) => {
   return result;
 }
 
-export const reset_password = async(token, option)=>{
+export const reset_password = async (token, option) => {
   const result = await postPublic(`auth/reset-password?token=${token}`, option);
   return result;
 }
 
 export const getAllUser = async () => {
   const result = await get("auth/alluser");
+  return result;
+}
+
+export const status = async (id, option) => {
+  const result = await patch(`auth/status/${id}`, option);
+  return result;
+}
+
+export const role = async (id, option) => {
+  const result = await patch(`auth/role/${id}`, option);
   return result;
 }
