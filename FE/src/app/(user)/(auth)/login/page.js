@@ -97,6 +97,12 @@ function Login() {
   }
   return (
     <>
+      {isLoading && <div className="result-container">
+        <div className="loading">
+          <div className="spinner"></div>
+          <p>Đang tải...</p>
+        </div>
+      </div>}
       <div className="minimal-container">
         {!showFFG &&
           <form className="login-form" onSubmit={handleSubmit}>
