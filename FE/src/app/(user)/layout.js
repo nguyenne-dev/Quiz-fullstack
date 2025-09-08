@@ -12,6 +12,8 @@ export default function LayoutUser({ children }) {
   const _id = Cookies.get('_id');
   const userMenuRef = useRef(null);
 
+  const [loading, setLoading] = useState(true);
+
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const pathname = usePathname(); // Lấy đường dẫn /URL
@@ -19,6 +21,10 @@ export default function LayoutUser({ children }) {
   useEffect(() => {
     setIsLogin(token && _id);
   }, [token, _id]);
+
+  useEffect(() => {
+    setLoading(false)
+  }, [pathname])
 
   // 👉 Hàm logout
   const handleLogout = () => {
@@ -38,28 +44,44 @@ export default function LayoutUser({ children }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+
+  const handleLinkClick = (e, href) => {
+    if (pathname !== href) {
+      setLoading(true);
+    } else {
+      e.preventDefault(); // chặn tải lại nếu bấm trang đang mở
+    }
+  };
+
+
   return (
     <>
+      {loading && <div className="result-container">
+        <div className="loading">
+          <div className="spinner"></div>
+          <p>Đang tải...</p>
+        </div>
+      </div>}
       {/* Header */}
       <header className="header">
         <div className="nav-container">
           <a href="/" className="logo">
             <div className="logo-icon">🧠</div>
-            QuizMasterVN
+            QUIZ
           </a>
           <nav>
             <ul className="nav-menu">
               <li>
-                <a href="/" className={pathname === "/" ? "active" : ""}>Trang chủ</a>
+                <a href="/" onClick={(e) => handleLinkClick(e, "/")} className={pathname === "/" ? "active" : ""}>Trang chủ</a>
               </li>
               <li>
-                <a href="/topic" className={pathname.startsWith("/topic") ? "active" : ""}>Danh mục</a>
+                <a href="/topic" onClick={(e) => handleLinkClick(e, "/topic")} className={pathname.startsWith("/topic") ? "active" : ""}>Danh mục</a>
               </li>
               <li>
-                <a href="/#about" className={pathname.includes("#about") ? "active" : ""}>Giới thiệu</a>
+                <a href="/#about" onClick={(e) => handleLinkClick(e, "/")} className={pathname.includes("#about") ? "active" : ""}>Giới thiệu</a>
               </li>
               <li>
-                <a href="/#contact" className={pathname.includes("#contact") ? "active" : ""}>Liên hệ</a>
+                <a href="/#contact" onClick={(e) => handleLinkClick(e, "/")} className={pathname.includes("#contact") ? "active" : ""}>Liên hệ</a>
               </li>
             </ul>
             <div
@@ -115,7 +137,7 @@ export default function LayoutUser({ children }) {
         <div className="footer-container">
           <div className="footer-grid">
             <div className="footer-section">
-              <h3>QuizMasterVN</h3>
+              <h3>QUIZ</h3>
               <p style={{ color: '#d1d5db', marginBottom: '20px' }}>Nền tảng học tập trực tuyến hàng đầu Việt Nam, giúp bạn nâng
                 cao kiến thức một cách hiệu quả.</p>
             </div>
