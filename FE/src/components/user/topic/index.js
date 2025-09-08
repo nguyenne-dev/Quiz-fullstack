@@ -4,6 +4,9 @@ import { getTopic } from "../../../services/topicService";
 import { getQuestionTopic } from "../../../services/questionService";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import './style.css'
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
 import {
   Dialog,
   DialogTitle,
