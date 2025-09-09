@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import "./style.css";
 import PageTopic from "../topic";
+import ContactPage from "../contact";
 export default function HomePage() {
   useEffect(() => {
     // Observer để animate khi scroll
@@ -101,7 +102,7 @@ export default function HomePage() {
       <section className="home-features">
         <div className="home-container">
           <div className="home-features__header">
-            <h2 className="home-features__title">Tại sao chọn CodeQuiz?</h2>
+            <h2 className="home-features__title">Tại sao chọn QUIZ?</h2>
             <p className="home-features__subtitle">
               Chúng tôi cung cấp trải nghiệm học tập tốt nhất với các tính năng được thiết kế
               đặc biệt cho lập trình viên
@@ -166,12 +167,14 @@ export default function HomePage() {
         </div> */}
       </section>
 
+      <ContactPage />
+
       {/* CTA */}
       <section className="home-cta">
         <div className="home-container">
           <h2 className="home-cta__title">Sẵn sàng thử thách bản thân?</h2>
           <p className="home-cta__description">
-            Tham gia cùng hơn 50,000+ lập trình viên đang nâng cao kỹ năng mỗi ngày tại CodeQuiz
+            Tham gia cùng rất nhiều lập trình viên đang nâng cao kỹ năng mỗi ngày tại QUIZ
           </p>
           <a href="/topic" className="home-button home-button--primary home-button--large">
             🎯 Làm bài thi đầu tiên
