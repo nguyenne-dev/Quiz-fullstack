@@ -254,3 +254,318 @@ exports.updateSubmission = async (req, res) => {
     });
   }
 };
+
+// ==========================================
+// ADMIN CONTROLLERS: Quản lý bài thi & Thống kê
+// ==========================================
+
+// Lấy danh sách toàn bộ bài thi của tất cả học sinh (có tìm kiếm, lọc, sắp xếp)
+exports.getAllSubmissionsAdmin = async (req, res) => {
+  try {
+    const { search, topicId, grade, sortBy } = req.query;
+
+    const query = {};
+    if (topicId) {
+      query.topicId = topicId;
+    }
+
+    const submissions = await Submission.find(query)
+      .populate("userId", "_id fullname email role avatar")
+      .populate("topicId", "_id title description")
+      .sort({ submittedAt: -1 });
+
+    // Gắn thêm thông tin chi tiết: số câu hỏi, thời gian làm, xếp loại
+    let results = await Promise.all(
+      submissions.map(async (sub) => {
+        const answers = await SubmissionAnswer.find({ submissionId: sub._id });
+        const totalQuestions = answers.length || 1;
+        const score = typeof sub.score === "number" ? sub.score : 0;
+        const percentage = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
+
+        let gradeType = "failed";
+        if (percentage >= 80) gradeType = "excellent";
+        else if (percentage >= 50) gradeType = "passed";
+
+        let durationSeconds = 0;
+        if (sub.startedAt && sub.submittedAt) {
+          durationSeconds = Math.max(0, Math.round((new Date(sub.submittedAt) - new Date(sub.startedAt)) / 1000));
+        }
+
+        return {
+          _id: sub._id,
+          user: {
+            _id: sub.userId?._id || "",
+            fullname: sub.userId?.fullname || "Học sinh ẩn danh",
+            email: sub.userId?.email || "N/A",
+            role: sub.userId?.role || "USER",
+            avatar: sub.userId?.avatar || "",
+          },
+          topic: {
+            _id: sub.topicId?._id || "",
+            title: sub.topicId?.title || "Chủ đề đã xóa",
+            description: sub.topicId?.description || "",
+          },
+          score,
+          totalQuestions,
+          percentage,
+          gradeType, // 'excellent' | 'passed' | 'failed'
+          startedAt: sub.startedAt,
+          submittedAt: sub.submittedAt,
+          durationSeconds,
+        };
+      })
+    );
+
+    // Lọc theo từ khóa tìm kiếm (tên, email, chủ đề)
+    if (search && search.trim()) {
+      const s = search.trim().toLowerCase();
+      results = results.filter((item) =>
+        item.user.fullname.toLowerCase().includes(s) ||
+        item.user.email.toLowerCase().includes(s) ||
+        item.topic.title.toLowerCase().includes(s)
+      );
+    }
+
+    // Lọc theo xếp loại
+    if (grade && grade !== "all") {
+      results = results.filter((item) => item.gradeType === grade);
+    }
+
+    // Sắp xếp
+    if (sortBy === "score_asc") {
+      results.sort((a, b) => a.percentage - b.percentage);
+    } else if (sortBy === "score_desc") {
+      results.sort((a, b) => b.percentage - a.percentage);
+    } else if (sortBy === "duration_asc") {
+      results.sort((a, b) => a.durationSeconds - b.durationSeconds);
+    } else if (sortBy === "duration_desc") {
+      results.sort((a, b) => b.durationSeconds - a.durationSeconds);
+    } else if (sortBy === "oldest") {
+      results.sort((a, b) => new Date(a.submittedAt) - new Date(b.submittedAt));
+    } else {
+      // default: newest
+      results.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+    }
+
+    res.json({
+      success: true,
+      total: results.length,
+      data: results,
+    });
+  } catch (err) {
+    console.error("Lỗi khi lấy danh sách submissions admin:", err);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi lấy danh sách bài làm của người dùng",
+      error: err.message,
+    });
+  }
+};
+
+// Tổng hợp báo cáo thống kê kết quả thi toàn hệ thống
+exports.getAdminSubmissionStats = async (req, res) => {
+  try {
+    const submissions = await Submission.find()
+      .populate("userId", "_id fullname email")
+      .populate("topicId", "_id title")
+      .sort({ submittedAt: -1 });
+
+    const totalSubmissions = submissions.length;
+    const uniqueUserIds = new Set();
+    let totalScoreSum = 0;
+    let totalQuestionsSum = 0;
+    let passCount = 0;
+    let excellentCount = 0;
+
+    const topicStatsMap = new Map();
+    const scoreBrackets = {
+      bracket0_20: 0,
+      bracket21_40: 0,
+      bracket41_60: 0,
+      bracket61_80: 0,
+      bracket81_100: 0,
+    };
+
+    const details = await Promise.all(
+      submissions.map(async (sub) => {
+        if (sub.userId?._id) {
+          uniqueUserIds.add(sub.userId._id.toString());
+        }
+
+        const answers = await SubmissionAnswer.find({ submissionId: sub._id });
+        const totalQuestions = answers.length || 1;
+        const score = typeof sub.score === "number" ? sub.score : 0;
+        const percentage = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
+
+        totalScoreSum += score;
+        totalQuestionsSum += totalQuestions;
+
+        if (percentage >= 50) passCount++;
+        if (percentage >= 80) excellentCount++;
+
+        // Phân bố phổ điểm
+        if (percentage <= 20) scoreBrackets.bracket0_20++;
+        else if (percentage <= 40) scoreBrackets.bracket21_40++;
+        else if (percentage <= 60) scoreBrackets.bracket41_60++;
+        else if (percentage <= 80) scoreBrackets.bracket61_80++;
+        else scoreBrackets.bracket81_100++;
+
+        // Thống kê theo từng chủ đề
+        const tId = sub.topicId?._id ? sub.topicId._id.toString() : "unknown";
+        const tTitle = sub.topicId?.title || "Chủ đề khác";
+
+        if (!topicStatsMap.has(tId)) {
+          topicStatsMap.set(tId, {
+            topicId: tId,
+            topicTitle: tTitle,
+            attempts: 0,
+            totalScore: 0,
+            totalQuestions: 0,
+            passedAttempts: 0,
+          });
+        }
+        const tStat = topicStatsMap.get(tId);
+        tStat.attempts++;
+        tStat.totalScore += score;
+        tStat.totalQuestions += totalQuestions;
+        if (percentage >= 50) tStat.passedAttempts++;
+
+        return {
+          _id: sub._id,
+          candidateName: sub.userId?.fullname || "Học sinh ẩn danh",
+          candidateEmail: sub.userId?.email || "N/A",
+          topicTitle: tTitle,
+          score,
+          totalQuestions,
+          percentage,
+          submittedAt: sub.submittedAt,
+        };
+      })
+    );
+
+    const averageScorePercent = totalQuestionsSum > 0
+      ? Math.round((totalScoreSum / totalQuestionsSum) * 100)
+      : 0;
+
+    const passRate = totalSubmissions > 0
+      ? Math.round((passCount / totalSubmissions) * 100)
+      : 0;
+
+    const excellentRate = totalSubmissions > 0
+      ? Math.round((excellentCount / totalSubmissions) * 100)
+      : 0;
+
+    const topicStats = Array.from(topicStatsMap.values()).map((t) => ({
+      topicId: t.topicId,
+      topicTitle: t.topicTitle,
+      attempts: t.attempts,
+      avgPercentage: t.totalQuestions > 0 ? Math.round((t.totalScore / t.totalQuestions) * 100) : 0,
+      passRate: t.attempts > 0 ? Math.round((t.passedAttempts / t.attempts) * 100) : 0,
+    }));
+
+    res.json({
+      success: true,
+      data: {
+        totalSubmissions,
+        totalCandidates: uniqueUserIds.size,
+        averageScorePercent,
+        passRate,
+        excellentRate,
+        scoreBrackets,
+        topicStats,
+        recentAttempts: details.slice(0, 5),
+      },
+    });
+  } catch (err) {
+    console.error("Lỗi khi lấy thống kê admin submissions:", err);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi lấy dữ liệu thống kê bài thi",
+      error: err.message,
+    });
+  }
+};
+
+// Xem chi tiết bài thi của thí sinh
+exports.getAdminSubmissionDetail = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const submission = await Submission.findById(id)
+      .populate("userId", "_id fullname email role avatar")
+      .populate("topicId", "_id title description");
+
+    if (!submission) {
+      return res.status(404).json({ success: false, message: "Không tìm thấy bài làm này" });
+    }
+
+    const submissionAnswers = await SubmissionAnswer.find({ submissionId: id });
+
+    const questions = submissionAnswers.map((ans) => ({
+      _id: ans.questionId || ans._id,
+      question: ans.question,
+      answers: ans.answers || [],
+      correctAnswer: ans.correctAnswer,
+      selectedAnswer: ans.selectedAnswer,
+      isCorrect: ans.isCorrect,
+    }));
+
+    const totalQuestions = submissionAnswers.length;
+    const score = submission.score || 0;
+    const percentage = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
+    let durationSeconds = 0;
+    if (submission.startedAt && submission.submittedAt) {
+      durationSeconds = Math.max(0, Math.round((new Date(submission.submittedAt) - new Date(submission.startedAt)) / 1000));
+    }
+
+    res.json({
+      success: true,
+      data: {
+        _id: submission._id,
+        user: {
+          _id: submission.userId?._id || "",
+          fullname: submission.userId?.fullname || "Học sinh ẩn danh",
+          email: submission.userId?.email || "N/A",
+          avatar: submission.userId?.avatar || "",
+        },
+        topic: {
+          _id: submission.topicId?._id || "",
+          title: submission.topicId?.title || "Bài thi trắc nghiệm",
+          description: submission.topicId?.description || "",
+        },
+        startedAt: submission.startedAt,
+        submittedAt: submission.submittedAt,
+        durationSeconds,
+        score,
+        totalQuestions,
+        percentage,
+        questions,
+      },
+    });
+  } catch (err) {
+    console.error("Lỗi khi lấy chi tiết bài làm admin:", err);
+    res.status(500).json({ success: false, message: "Lỗi khi lấy chi tiết bài làm", error: err.message });
+  }
+};
+
+// Xóa bài làm của thí sinh
+exports.deleteSubmissionAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const submission = await Submission.findById(id);
+    if (!submission) {
+      return res.status(404).json({ success: false, message: "Không tìm thấy bài làm cần xóa" });
+    }
+
+    await SubmissionAnswer.deleteMany({ submissionId: id });
+    await Submission.findByIdAndDelete(id);
+
+    res.json({
+      success: true,
+      message: "Đã xóa lượt làm bài thi thành công",
+    });
+  } catch (err) {
+    console.error("Lỗi khi xóa submission admin:", err);
+    res.status(500).json({ success: false, message: "Lỗi khi xóa bài làm", error: err.message });
+  }
+};
