@@ -858,13 +858,170 @@ const sampleTopicsWithQuestions = [
   },
 ];
 
+const User = require('../models/User');
+const Submission = require('../models/Submission');
+const SubmissionAnswer = require('../models/SubmissionAnswer');
+const bcrypt = require('bcryptjs');
+
+const testUsersData = [
+  {
+    fullname: 'Nguyễn Văn Test',
+    email: 'test@gmail.com',
+    gender: 'Nam',
+    dob: new Date('2000-01-01'),
+    role: 'USER',
+    status: 'ACTIVE',
+  },
+  {
+    fullname: 'Nguyễn Huy Hoàng',
+    email: 'hoang.dev@gmail.com',
+    gender: 'Nam',
+    dob: new Date('2001-08-15'),
+    role: 'USER',
+    status: 'ACTIVE',
+  },
+  {
+    fullname: 'Lê Minh Ánh',
+    email: 'minhanh.tester@gmail.com',
+    gender: 'Nữ',
+    dob: new Date('2002-03-20'),
+    role: 'USER',
+    status: 'ACTIVE',
+  },
+  {
+    fullname: 'Trần Đức Anh',
+    email: 'ducanh.tech@gmail.com',
+    gender: 'Nam',
+    dob: new Date('2002-11-10'),
+    role: 'USER',
+    status: 'ACTIVE',
+  },
+  {
+    fullname: 'Quản Trị Viên Hệ Thống',
+    email: 'admin@gmail.com',
+    gender: 'Nam',
+    dob: new Date('1998-05-20'),
+    role: 'ADMIN',
+    status: 'ACTIVE',
+  }
+];
+
+// Định nghĩa lịch sử làm bài thi chân thực theo từng mốc thời gian phát triển dự án
+const testSubmissionsTimeline = [
+  // 1. Nguyễn Văn Test (test@gmail.com)
+  {
+    userEmail: 'test@gmail.com',
+    topicTitle: 'HTML5 & Cấu Trúc Web Cơ Bản',
+    startedAt: '2025-08-25T14:10:00.000Z',
+    submittedAt: '2025-08-25T14:14:32.000Z',
+    targetScore: 9, // 9/10
+  },
+  {
+    userEmail: 'test@gmail.com',
+    topicTitle: 'CSS3 & Giao Diện Responsive',
+    startedAt: '2025-11-20T09:15:00.000Z',
+    submittedAt: '2025-11-20T09:21:40.000Z',
+    targetScore: 8, // 8/10
+  },
+  {
+    userEmail: 'test@gmail.com',
+    topicTitle: 'JavaScript Core & ES6+ Nâng Cao',
+    startedAt: '2026-01-20T16:40:00.000Z',
+    submittedAt: '2026-01-20T16:46:15.000Z',
+    targetScore: 7, // 7/10
+  },
+  {
+    userEmail: 'test@gmail.com',
+    topicTitle: 'ReactJS & Modern Frontend',
+    startedAt: '2026-02-22T10:10:00.000Z',
+    submittedAt: '2026-02-22T10:18:25.000Z',
+    targetScore: 10, // 10/10
+  },
+  {
+    userEmail: 'test@gmail.com',
+    topicTitle: 'Node.js & RESTful API Backend',
+    startedAt: '2026-05-15T14:30:00.000Z',
+    submittedAt: '2026-05-15T14:37:45.000Z',
+    targetScore: 8, // 8/10
+  },
+
+  // 2. Nguyễn Huy Hoàng (hoang.dev@gmail.com)
+  {
+    userEmail: 'hoang.dev@gmail.com',
+    topicTitle: 'Git & GitHub Trong Dự Án Nhóm',
+    startedAt: '2025-11-22T10:00:00.000Z',
+    submittedAt: '2025-11-22T10:05:30.000Z',
+    targetScore: 9, // 9/10
+  },
+  {
+    userEmail: 'hoang.dev@gmail.com',
+    topicTitle: 'Node.js & RESTful API Backend',
+    startedAt: '2026-01-25T15:20:00.000Z',
+    submittedAt: '2026-01-25T15:28:10.000Z',
+    targetScore: 8, // 8/10
+  },
+  {
+    userEmail: 'hoang.dev@gmail.com',
+    topicTitle: 'Khoa Học Máy Tính & Cấu Trúc Dữ Liệu',
+    startedAt: '2026-05-14T09:10:00.000Z',
+    submittedAt: '2026-05-14T09:19:40.000Z',
+    targetScore: 7, // 7/10
+  },
+
+  // 3. Lê Minh Ánh (minhanh.tester@gmail.com)
+  {
+    userEmail: 'minhanh.tester@gmail.com',
+    topicTitle: 'HTML5 & Cấu Trúc Web Cơ Bản',
+    startedAt: '2025-12-15T14:00:00.000Z',
+    submittedAt: '2025-12-15T14:06:12.000Z',
+    targetScore: 10, // 10/10
+  },
+  {
+    userEmail: 'minhanh.tester@gmail.com',
+    topicTitle: 'MongoDB & Thiết Kế NoSQL',
+    startedAt: '2026-02-24T16:30:00.000Z',
+    submittedAt: '2026-02-24T16:37:20.000Z',
+    targetScore: 9, // 9/10
+  },
+  {
+    userEmail: 'minhanh.tester@gmail.com',
+    topicTitle: 'ReactJS & Modern Frontend',
+    startedAt: '2026-05-13T11:00:00.000Z',
+    submittedAt: '2026-05-13T11:08:50.000Z',
+    targetScore: 8, // 8/10
+  },
+
+  // 4. Trần Đức Anh (ducanh.tech@gmail.com)
+  {
+    userEmail: 'ducanh.tech@gmail.com',
+    topicTitle: 'CSS3 & Giao Diện Responsive',
+    startedAt: '2026-01-18T10:30:00.000Z',
+    submittedAt: '2026-01-18T10:35:45.000Z',
+    targetScore: 6, // 6/10
+  },
+  {
+    userEmail: 'ducanh.tech@gmail.com',
+    topicTitle: 'JavaScript Core & ES6+ Nâng Cao',
+    startedAt: '2026-02-20T14:15:00.000Z',
+    submittedAt: '2026-02-20T14:22:30.000Z',
+    targetScore: 8, // 8/10
+  },
+  {
+    userEmail: 'ducanh.tech@gmail.com',
+    topicTitle: 'Git & GitHub Trong Dự Án Nhóm',
+    startedAt: '2026-05-16T16:00:00.000Z',
+    submittedAt: '2026-05-16T16:05:20.000Z',
+    targetScore: 9, // 9/10
+  }
+];
+
 async function seed() {
   try {
     console.log('🔄 Đang kết nối tới MongoDB Atlas...');
     await mongoose.connect(process.env.MONGO_URI);
     console.log('✅ Đã kết nối MongoDB thành công!');
 
-    // 1. Dọn dẹp toàn bộ dữ liệu rác cũ (các chủ đề không thuộc danh mục chuẩn)
+    // 1. Dọn dẹp toàn bộ dữ liệu rác cũ
     const validTitles = sampleTopicsWithQuestions.map((t) => t.title);
     
     const junkTopics = await Topic.find({ title: { $nin: validTitles } });
@@ -876,7 +1033,8 @@ async function seed() {
       console.log(`✨ Đã dọn dẹp xong dữ liệu rác!`);
     }
 
-    // 2. Nạp hoặc cập nhật các bộ đề thi chuẩn với tối thiểu 10 câu mỗi bộ
+    // 2. Nạp hoặc cập nhật các bộ đề thi chuẩn với 10 câu mỗi bộ
+    const topicsMap = new Map();
     for (const item of sampleTopicsWithQuestions) {
       let topic = await Topic.findOne({ title: item.title });
       if (!topic) {
@@ -892,33 +1050,133 @@ async function seed() {
         console.log(`⚡ Cập nhật chủ đề: ${item.title}`);
       }
 
+      topicsMap.set(item.title, topic);
+
       // Đảm bảo đủ 10 câu hỏi cho chủ đề này
       for (const qData of item.questions) {
-        const existingQ = await Question.findOne({
+        let questionDoc = await Question.findOne({
           topicId: topic._id,
           question: qData.question,
         });
 
-        if (!existingQ) {
-          const newQ = new Question({
+        if (!questionDoc) {
+          questionDoc = new Question({
             topicId: topic._id,
             question: qData.question,
             answers: qData.answers,
             correctAnswer: qData.correctAnswer,
           });
-          await newQ.save();
+          await questionDoc.save();
           console.log(`   + Thêm câu hỏi: ${qData.question.substring(0, 45)}...`);
         }
       }
     }
 
+    // 3. Khởi tạo danh sách Tài Khoản Test (mật khẩu mặc định: 123123)
+    const defaultPasswordHash = await bcrypt.hash('123123', 10);
+    const usersMap = new Map();
+
+    console.log('\n👥 Đang khởi tạo danh sách tài khoản test...');
+    for (const uData of testUsersData) {
+      let user = await User.findOne({ email: uData.email });
+      if (!user) {
+        user = new User({
+          fullname: uData.fullname,
+          email: uData.email,
+          password: defaultPasswordHash,
+          gender: uData.gender,
+          dob: uData.dob,
+          role: uData.role,
+          status: uData.status,
+        });
+        await user.save();
+        console.log(`   + Tạo tài khoản: [${uData.email}] (${uData.fullname})`);
+      } else {
+        user.password = defaultPasswordHash;
+        user.fullname = uData.fullname;
+        user.gender = uData.gender;
+        user.status = 'ACTIVE';
+        await user.save();
+        console.log(`   ⚡ Cập nhật tài khoản: [${uData.email}] (${uData.fullname})`);
+      }
+      usersMap.set(uData.email, user);
+    }
+
+    // 4. Khởi tạo danh sách Lịch Sử Làm Bài (Submissions) chân thực
+    console.log('\n📝 Đang tạo dữ liệu bài làm trắc nghiệm lịch sử theo timeline...');
+    // Xóa submissions cũ để tái tạo dữ liệu sạch sẽ
+    await SubmissionAnswer.deleteMany({});
+    await Submission.deleteMany({});
+
+    for (const subItem of testSubmissionsTimeline) {
+      const user = usersMap.get(subItem.userEmail);
+      const topic = topicsMap.get(subItem.topicTitle);
+
+      if (!user || !topic) continue;
+
+      const questions = await Question.find({ topicId: topic._id });
+      if (questions.length === 0) continue;
+
+      const submission = new Submission({
+        userId: user._id,
+        topicId: topic._id,
+        startedAt: new Date(subItem.startedAt),
+        submittedAt: new Date(subItem.submittedAt),
+        score: subItem.targetScore,
+      });
+
+      await submission.save();
+
+      // Tạo câu trả lời cho từng câu hỏi với tỷ lệ đúng theo targetScore
+      let correctAnswersGiven = 0;
+      const allChoices = ['A', 'B', 'C', 'D'];
+
+      for (let i = 0; i < questions.length; i++) {
+        const q = questions[i];
+        let selectedAnswer;
+        let isCorrect = false;
+
+        if (correctAnswersGiven < subItem.targetScore && (i < subItem.targetScore || Math.random() > 0.3)) {
+          selectedAnswer = q.correctAnswer;
+          isCorrect = true;
+          correctAnswersGiven++;
+        } else {
+          const wrongChoices = allChoices.filter(c => c !== q.correctAnswer);
+          selectedAnswer = wrongChoices[Math.floor(Math.random() * wrongChoices.length)];
+          isCorrect = false;
+        }
+
+        const subAnswer = new SubmissionAnswer({
+          submissionId: submission._id,
+          questionId: q._id,
+          question: q.question,
+          answers: q.answers,
+          selectedAnswer,
+          correctAnswer: q.correctAnswer,
+          isCorrect,
+        });
+
+        await subAnswer.save();
+      }
+
+      // Cập nhật điểm số chính xác
+      submission.score = correctAnswersGiven;
+      await submission.save();
+      console.log(`   + Bài làm [${subItem.userEmail}] - ${subItem.topicTitle}: ${correctAnswersGiven}/${questions.length} điểm (${new Date(subItem.submittedAt).toLocaleDateString('vi-VN')})`);
+    }
+
     const totalTopics = await Topic.countDocuments();
     const totalQuestions = await Question.countDocuments();
-    console.log('\n=======================================');
-    console.log(`🎉 Nạp dữ liệu 80 câu hỏi hoàn tất!`);
-    console.log(`📊 Tổng số chủ đề: ${totalTopics}`);
+    const totalUsers = await User.countDocuments();
+    const totalSubmissions = await Submission.countDocuments();
+
+    console.log('\n======================================================');
+    console.log(`🎉 Nạp dữ liệu hoàn tất thành công 100%!`);
+    console.log(`📊 Tổng số chủ đề thi: ${totalTopics}`);
     console.log(`📝 Tổng số câu hỏi: ${totalQuestions}`);
-    console.log('=======================================');
+    console.log(`👥 Tổng số tài khoản: ${totalUsers}`);
+    console.log(`🏆 Tổng số bài nộp thi: ${totalSubmissions}`);
+    console.log('======================================================');
 
     process.exit(0);
   } catch (error) {
@@ -928,3 +1186,4 @@ async function seed() {
 }
 
 seed();
+

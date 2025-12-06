@@ -14,7 +14,8 @@ import {
   ShieldCheck,
   Menu,
   X,
-  Sparkles
+  Sparkles,
+  Award
 } from 'lucide-react';
 
 export const AdminLayout = () => {
@@ -104,6 +105,10 @@ export const AdminLayout = () => {
 
             <NavLink to="/admin/questions" style={navItemStyle} onClick={() => setSidebarOpen(false)}>
               <HelpCircle size={18} /> Quản lý Câu hỏi
+            </NavLink>
+
+            <NavLink to="/admin/submissions" style={navItemStyle} onClick={() => setSidebarOpen(false)}>
+              <Award size={18} /> Quản lý Bài thi
             </NavLink>
 
             <NavLink to="/admin/users" style={navItemStyle} onClick={() => setSidebarOpen(false)}>

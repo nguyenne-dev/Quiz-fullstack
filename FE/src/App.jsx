@@ -30,6 +30,7 @@ import ContactPage from './pages/user/ContactPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminTopicsPage from './pages/admin/AdminTopicsPage';
 import AdminQuestionsPage from './pages/admin/AdminQuestionsPage';
+import AdminSubmissionsPage from './pages/admin/AdminSubmissionsPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
 
 export const App = () => {
@@ -102,6 +103,7 @@ export const App = () => {
                 <Route index element={<AdminDashboardPage />} />
                 <Route path="topics" element={<AdminTopicsPage />} />
                 <Route path="questions" element={<AdminQuestionsPage />} />
+                <Route path="submissions" element={<AdminSubmissionsPage />} />
                 <Route path="users" element={<AdminUsersPage />} />
               </Route>
 

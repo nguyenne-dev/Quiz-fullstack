@@ -27,12 +27,18 @@ QuizMaster là ứng dụng luyện thi và đánh giá năng lực trắc nghi�
   - Chuyển đổi linh hoạt giao diện Sáng / Tối (Light & Dark Theme).
 
 ### 2. Dành cho Quản trị viên (Admin Panel)
-- **Bảng điều khiển (Dashboard):** Tổng quan số lượng chủ đề, câu hỏi và người dùng trong hệ thống.
+- **Bảng điều khiển (Dashboard):** Tổng quan số lượng chủ đề, câu hỏi, người dùng, tổng lượt làm bài thi và điểm trung bình toàn hệ thống.
 - **Quản lý Chủ đề (Topics Management):** Thêm, sửa, xóa chủ đề thi (kèm kiểm tra ràng buộc câu hỏi).
 - **Quản lý Câu hỏi (Questions Management):**
   - Lọc câu hỏi theo từng chủ đề.
   - Thêm / Sửa câu hỏi với 4 đáp án A, B, C, D và chọn đáp án chính xác.
   - Xóa câu hỏi với hộp thoại xác nhận an toàn.
+- **Quản lý Bài thi & Thống kê Điểm số (Submissions & Analytics):**
+  - Theo dõi danh sách toàn bộ thí sinh đã làm bài thi, thời gian làm và thời lượng hoàn thành.
+  - Phân tích phổ điểm hệ thống, tỉ lệ đạt chuẩn (≥ 50%), tỉ lệ xuất sắc (≥ 80%) và xếp loại tự động.
+  - Thống kê hiệu suất làm bài theo từng chủ đề thi (số lượt thi, điểm trung bình, tỉ lệ đạt).
+  - Xem chi tiết bài làm của từng thí sinh: đối chiếu đáp án học sinh chọn và đáp án đúng.
+  - Bộ lọc thông minh theo chủ đề, xếp loại, tìm kiếm theo tên/email thí sinh và **xuất file báo cáo CSV/Excel**.
 - **Quản lý Người dùng (Users Management):**
   - Xem danh sách thành viên đăng ký.
   - Thay đổi vai trò người dùng (`USER` ⇄ `ADMIN`).
@@ -165,6 +171,10 @@ Quiz-fullstack/
 | `POST` | `/submission` | Nộp bài thi và lưu kết quả | User |
 | `GET` | `/submission` | Lấy lịch sử làm bài của người dùng | User |
 | `GET` | `/submission/:id` | Xem chi tiết bảng điểm bài thi | User / Admin |
+| `GET` | `/submission/admin/all` | Lấy danh sách bài thi toàn bộ học sinh kèm tìm kiếm, lọc | Admin |
+| `GET` | `/submission/admin/stats` | Lấy báo cáo thống kê KPI, phổ điểm & hiệu suất chủ đề | Admin |
+| `GET` | `/submission/admin/:id` | Xem chi tiết bài làm của bất kỳ thí sinh nào | Admin |
+| `DELETE` | `/submission/admin/:id` | Xóa lượt làm bài thi của thí sinh | Admin |
 
 ---
 
