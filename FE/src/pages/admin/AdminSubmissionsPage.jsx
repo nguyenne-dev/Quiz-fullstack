@@ -50,9 +50,10 @@ export const AdminSubmissionsPage = () => {
 
   // Modal states
   const [selectedSubmission, setSelectedSubmission] = useState(null);
-  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailLoadingId, setDetailLoadingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [modalFilter, setModalFilter] = useState('ALL'); // 'ALL' | 'CORRECT' | 'WRONG'
 
   // Fetch initial data
   const loadData = async (isRefresh = false) => {
@@ -97,14 +98,15 @@ export const AdminSubmissionsPage = () => {
   // View detail of a submission
   const handleViewDetail = async (submissionId) => {
     try {
-      setDetailLoading(true);
+      setDetailLoadingId(submissionId);
       const detail = await submissionService.getAdminSubmissionDetail(submissionId);
       setSelectedSubmission(detail);
+      setModalFilter('ALL');
     } catch (err) {
       console.error('Lỗi khi xem chi tiết bài thi:', err);
-      addToast('Không thể tải chi tiết bài làm', 'error');
+      addToast('Không thể tải chi tiết bài làm của thí sinh', 'error');
     } finally {
-      setDetailLoading(false);
+      setDetailLoadingId(null);
     }
   };
 
@@ -191,6 +193,16 @@ export const AdminSubmissionsPage = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  // Filter questions for Modal
+  const modalQuestions = (selectedSubmission?.questions || []).filter((q) => {
+    if (modalFilter === 'CORRECT') return q.isCorrect;
+    if (modalFilter === 'WRONG') return !q.isCorrect;
+    return true;
+  });
+
+  const modalCorrectCount = (selectedSubmission?.questions || []).filter((q) => q.isCorrect).length;
+  const modalWrongCount = (selectedSubmission?.questions || []).length - modalCorrectCount;
 
   if (loading && !refreshing) {
     return <LoadingSpinner size="large" message="Đang tải dữ liệu bài thi & thống kê..." />;
@@ -582,8 +594,13 @@ export const AdminSubmissionsPage = () => {
                           className="btn btn-secondary btn-sm"
                           title="Xem chi tiết bài làm"
                           style={{ padding: '6px 10px' }}
+                          disabled={detailLoadingId === sub._id}
                         >
-                          <Eye size={15} />
+                          {detailLoadingId === sub._id ? (
+                            <RefreshCw size={15} className="spinning" />
+                          ) : (
+                            <Eye size={15} />
+                          )}
                         </button>
 
                         <button
@@ -671,7 +688,7 @@ export const AdminSubmissionsPage = () => {
             className="glass-card"
             style={{
               width: '100%',
-              maxWidth: '800px',
+              maxWidth: '840px',
               maxHeight: '90vh',
               overflowY: 'auto',
               backgroundColor: 'var(--bg-surface)',
@@ -706,12 +723,12 @@ export const AdminSubmissionsPage = () => {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
                 gap: '14px',
                 padding: '16px',
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: 'var(--bg-subtle)',
-                marginBottom: '24px',
+                marginBottom: '20px',
                 border: '1px solid var(--border-subtle)',
               }}
             >
@@ -736,88 +753,126 @@ export const AdminSubmissionsPage = () => {
               <div>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>Ngày nộp bài</span>
                 <p style={{ fontSize: '0.9rem', fontWeight: 700, marginTop: '4px' }}>
-                  {new Date(selectedSubmission.submittedAt).toLocaleDateString('vi-VN')}
+                  {new Date(selectedSubmission.submittedAt).toLocaleDateString('vi-VN')} {new Date(selectedSubmission.submittedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
             </div>
 
-            {/* Questions Review List */}
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '14px' }}>
-              Danh Sách Câu Hỏi & Đáp Án ({selectedSubmission.questions?.length || 0})
-            </h3>
+            {/* Filter Buttons for Questions */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>
+                Danh Sách Câu Hỏi ({modalQuestions.length})
+              </h3>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {selectedSubmission.questions && selectedSubmission.questions.map((q, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    padding: '16px',
-                    borderRadius: 'var(--radius-md)',
-                    border: `1px solid ${q.isCorrect ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
-                    backgroundColor: q.isCorrect ? 'rgba(16, 185, 129, 0.04)' : 'rgba(239, 68, 68, 0.04)',
-                  }}
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <button
+                  onClick={() => setModalFilter('ALL')}
+                  className={`btn btn-sm ${modalFilter === 'ALL' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ padding: '4px 10px', fontSize: '0.8rem' }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px', marginBottom: '10px' }}>
-                    <h4 style={{ fontSize: '0.95rem', fontWeight: 700, lineHeight: 1.4 }}>
-                      Câu {idx + 1}: {q.question}
-                    </h4>
-                    {q.isCorrect ? (
-                      <span className="badge badge-success" style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-                        <CheckCircle2 size={14} /> Đúng
-                      </span>
-                    ) : (
-                      <span className="badge badge-danger" style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-                        <XCircle size={14} /> Sai
-                      </span>
-                    )}
-                  </div>
+                  Tất cả ({(selectedSubmission.questions || []).length})
+                </button>
+                <button
+                  onClick={() => setModalFilter('CORRECT')}
+                  className={`btn btn-sm ${modalFilter === 'CORRECT' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ padding: '4px 10px', fontSize: '0.8rem', backgroundColor: modalFilter === 'CORRECT' ? 'var(--success)' : '' }}
+                >
+                  Đúng ({modalCorrectCount})
+                </button>
+                <button
+                  onClick={() => setModalFilter('WRONG')}
+                  className={`btn btn-sm ${modalFilter === 'WRONG' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ padding: '4px 10px', fontSize: '0.8rem', backgroundColor: modalFilter === 'WRONG' ? 'var(--danger)' : '' }}
+                >
+                  Sai ({modalWrongCount})
+                </button>
+              </div>
+            </div>
 
-                  {/* Answers choices */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px', fontSize: '0.85rem' }}>
-                    {q.answers && q.answers.map((ans, ansIdx) => {
-                      const letter = ['A', 'B', 'C', 'D'][ansIdx];
-                      const isCandidateChoice = q.selectedAnswer === letter;
-                      const isCorrectAnswer = q.correctAnswer === letter;
-
-                      let borderColor = 'var(--border-subtle)';
-                      let bg = 'var(--bg-surface)';
-                      let textTag = null;
-
-                      if (isCorrectAnswer) {
-                        borderColor = '#10b981';
-                        bg = 'rgba(16, 185, 129, 0.12)';
-                        textTag = <span style={{ color: '#10b981', fontWeight: 700, fontSize: '0.75rem' }}>(Đáp án đúng)</span>;
-                      }
-                      if (isCandidateChoice && !isCorrectAnswer) {
-                        borderColor = '#ef4444';
-                        bg = 'rgba(239, 68, 68, 0.12)';
-                        textTag = <span style={{ color: '#ef4444', fontWeight: 700, fontSize: '0.75rem' }}>(Thí sinh chọn sai)</span>;
-                      }
-
-                      return (
-                        <div
-                          key={ansIdx}
-                          style={{
-                            padding: '8px 12px',
-                            borderRadius: 'var(--radius-sm)',
-                            border: `1px solid ${borderColor}`,
-                            backgroundColor: bg,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontWeight: 800, width: '20px' }}>{letter}.</span>
-                            <span>{ans}</span>
-                          </div>
-                          {textTag}
-                        </div>
-                      );
-                    })}
-                  </div>
+            {/* Questions Review List */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {modalQuestions.length === 0 ? (
+                <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  Không có câu hỏi nào thuộc bộ lọc này.
                 </div>
-              ))}
+              ) : (
+                modalQuestions.map((q, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      padding: '16px',
+                      borderRadius: 'var(--radius-md)',
+                      border: `1px solid ${q.isCorrect ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+                      backgroundColor: q.isCorrect ? 'rgba(16, 185, 129, 0.04)' : 'rgba(239, 68, 68, 0.04)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px', marginBottom: '10px' }}>
+                      <h4 style={{ fontSize: '0.95rem', fontWeight: 700, lineHeight: 1.4 }}>
+                        Câu {idx + 1}: {q.question}
+                      </h4>
+                      {q.isCorrect ? (
+                        <span className="badge badge-success" style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+                          <CheckCircle2 size={14} /> Đúng (+1.0)
+                        </span>
+                      ) : (
+                        <span className="badge badge-danger" style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+                          <XCircle size={14} /> Sai (0)
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Answers choices safely handling object or string items */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px', fontSize: '0.85rem' }}>
+                      {q.answers && q.answers.map((ans, ansIdx) => {
+                        const optKey = (typeof ans === 'object' && ans !== null) ? (ans.key || ['A', 'B', 'C', 'D'][ansIdx]) : ['A', 'B', 'C', 'D'][ansIdx];
+                        const optText = (typeof ans === 'object' && ans !== null) ? (ans.text || '') : String(ans || '');
+                        
+                        const isCandidateChoice = q.selectedAnswer === optKey;
+                        const isCorrectAnswer = q.correctAnswer === optKey;
+
+                        let borderColor = 'var(--border-subtle)';
+                        let bg = 'var(--bg-surface)';
+                        let textTag = null;
+
+                        if (isCorrectAnswer && isCandidateChoice) {
+                          borderColor = '#10b981';
+                          bg = 'rgba(16, 185, 129, 0.14)';
+                          textTag = <span style={{ color: '#10b981', fontWeight: 700, fontSize: '0.75rem' }}>✓ Thí sinh chọn đúng</span>;
+                        } else if (isCorrectAnswer) {
+                          borderColor = '#10b981';
+                          bg = 'rgba(16, 185, 129, 0.10)';
+                          textTag = <span style={{ color: '#10b981', fontWeight: 700, fontSize: '0.75rem' }}>★ Đáp án đúng</span>;
+                        } else if (isCandidateChoice) {
+                          borderColor = '#ef4444';
+                          bg = 'rgba(239, 68, 68, 0.12)';
+                          textTag = <span style={{ color: '#ef4444', fontWeight: 700, fontSize: '0.75rem' }}>✗ Thí sinh chọn sai</span>;
+                        }
+
+                        return (
+                          <div
+                            key={ansIdx}
+                            style={{
+                              padding: '8px 12px',
+                              borderRadius: 'var(--radius-sm)',
+                              border: `1px solid ${borderColor}`,
+                              backgroundColor: bg,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ fontWeight: 800, width: '20px' }}>{optKey}.</span>
+                              <span>{optText}</span>
+                            </div>
+                            {textTag}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
 
             {/* Footer Modal */}
