@@ -209,13 +209,13 @@ export const AdminSubmissionsPage = () => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
       
       {/* Top Header & Export Banner */}
       <div
         className="glass-card"
         style={{
-          padding: '26px 30px',
+          padding: '24px 28px',
           background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(236, 72, 153, 0.12) 100%)',
           border: '1px solid rgba(99, 102, 241, 0.3)',
           display: 'flex',
@@ -402,11 +402,11 @@ export const AdminSubmissionsPage = () => {
       <div
         className="glass-card"
         style={{
-          padding: '18px 20px',
+          padding: '18px 22px',
           backgroundColor: 'var(--bg-surface)',
           display: 'flex',
           flexWrap: 'wrap',
-          gap: '14px',
+          gap: '12px',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
@@ -416,11 +416,11 @@ export const AdminSubmissionsPage = () => {
           <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input
             type="text"
-            className="input"
+            className="form-input"
             placeholder="Tìm theo tên học sinh, email, bài thi..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ paddingLeft: '40px', width: '100%' }}
+            style={{ paddingLeft: '42px', width: '100%', height: '42px' }}
           />
         </form>
 
@@ -428,10 +428,10 @@ export const AdminSubmissionsPage = () => {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
           {/* Topic filter */}
           <select
-            className="input"
+            className="form-select"
             value={selectedTopic}
             onChange={(e) => { setSelectedTopic(e.target.value); setCurrentPage(1); }}
-            style={{ width: 'auto', minWidth: '160px' }}
+            style={{ width: 'auto', minWidth: '170px', height: '42px' }}
           >
             <option value="">Tất cả chủ đề</option>
             {topics.map((t) => (
@@ -441,10 +441,10 @@ export const AdminSubmissionsPage = () => {
 
           {/* Grade filter */}
           <select
-            className="input"
+            className="form-select"
             value={selectedGrade}
             onChange={(e) => { setSelectedGrade(e.target.value); setCurrentPage(1); }}
-            style={{ width: 'auto', minWidth: '140px' }}
+            style={{ width: 'auto', minWidth: '150px', height: '42px' }}
           >
             <option value="all">Tất cả xếp loại</option>
             <option value="excellent">Xuất sắc (≥ 80%)</option>
@@ -454,10 +454,10 @@ export const AdminSubmissionsPage = () => {
 
           {/* Sort selector */}
           <select
-            className="input"
+            className="form-select"
             value={sortBy}
             onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
-            style={{ width: 'auto', minWidth: '150px' }}
+            style={{ width: 'auto', minWidth: '160px', height: '42px' }}
           >
             <option value="newest">Mới nhất trước</option>
             <option value="oldest">Cũ nhất trước</option>
