@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { submissionService } from '../../services/submissionService';
 import { topicService } from '../../services/topicService';
 import { useToast } from '../../components/common/Toast';
@@ -31,14 +31,14 @@ import {
 export const AdminSubmissionsPage = () => {
   const { addToast } = useToast();
 
-  // Data states
-  const [submissions, setSubmissions] = useState([]);
+  // Raw data from server
+  const [allSubmissions, setAllSubmissions] = useState([]);
   const [stats, setStats] = useState(null);
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Filter & Search states
+  // Instant filter & search states
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('all');
@@ -55,24 +55,19 @@ export const AdminSubmissionsPage = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [modalFilter, setModalFilter] = useState('ALL'); // 'ALL' | 'CORRECT' | 'WRONG'
 
-  // Fetch initial data
+  // Fetch initial data once
   const loadData = async (isRefresh = false) => {
     try {
       if (isRefresh) setRefreshing(true);
       else setLoading(true);
 
       const [submissionsData, statsData, topicsData] = await Promise.all([
-        submissionService.getAllSubmissionsAdmin({
-          search: searchQuery,
-          topicId: selectedTopic,
-          grade: selectedGrade,
-          sortBy: sortBy,
-        }),
+        submissionService.getAllSubmissionsAdmin({}),
         submissionService.getAdminSubmissionStats(),
         topicService.getAllTopics().catch(() => []),
       ]);
 
-      setSubmissions(submissionsData || []);
+      setAllSubmissions(submissionsData || []);
       setStats(statsData || null);
       setTopics(topicsData || []);
     } catch (err) {
@@ -86,14 +81,58 @@ export const AdminSubmissionsPage = () => {
 
   useEffect(() => {
     loadData();
-  }, [selectedTopic, selectedGrade, sortBy]);
+  }, []);
 
-  // Handle manual search trigger
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    loadData();
+  // Instant real-time filtering & sorting without reloading page
+  const filteredSubmissions = useMemo(() => {
+    let result = [...allSubmissions];
+
+    // 1. Text Search (Candidate name, email, topic title)
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter((item) => {
+        const name = (item.user?.fullname || '').toLowerCase();
+        const email = (item.user?.email || '').toLowerCase();
+        const topic = (item.topic?.title || '').toLowerCase();
+        return name.includes(q) || email.includes(q) || topic.includes(q);
+      });
+    }
+
+    // 2. Topic filter
+    if (selectedTopic) {
+      result = result.filter((item) => {
+        const tId = item.topic?._id || item.topicId;
+        return tId === selectedTopic;
+      });
+    }
+
+    // 3. Grade filter
+    if (selectedGrade && selectedGrade !== 'all') {
+      result = result.filter((item) => item.gradeType === selectedGrade);
+    }
+
+    // 4. Sort
+    if (sortBy === 'newest') {
+      result.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+    } else if (sortBy === 'oldest') {
+      result.sort((a, b) => new Date(a.submittedAt) - new Date(b.submittedAt));
+    } else if (sortBy === 'score_desc') {
+      result.sort((a, b) => (b.percentage || 0) - (a.percentage || 0));
+    } else if (sortBy === 'score_asc') {
+      result.sort((a, b) => (a.percentage || 0) - (b.percentage || 0));
+    } else if (sortBy === 'duration_asc') {
+      result.sort((a, b) => (a.durationSeconds || 0) - (b.durationSeconds || 0));
+    } else if (sortBy === 'duration_desc') {
+      result.sort((a, b) => (b.durationSeconds || 0) - (a.durationSeconds || 0));
+    }
+
+    return result;
+  }, [allSubmissions, searchQuery, selectedTopic, selectedGrade, sortBy]);
+
+  // Reset pagination to page 1 whenever filters change
+  useEffect(() => {
     setCurrentPage(1);
-  };
+  }, [searchQuery, selectedTopic, selectedGrade, sortBy]);
 
   // View detail of a submission
   const handleViewDetail = async (submissionId) => {
@@ -116,10 +155,10 @@ export const AdminSubmissionsPage = () => {
     try {
       await submissionService.deleteSubmissionAdmin(deletingId);
       addToast('Đã xóa lượt làm bài thành công', 'success');
-      setSubmissions((prev) => prev.filter((item) => item._id !== deletingId));
+      setAllSubmissions((prev) => prev.filter((item) => item._id !== deletingId));
       setDeleteModalOpen(false);
       setDeletingId(null);
-      // Reload stats
+      // Reload stats in background
       const newStats = await submissionService.getAdminSubmissionStats();
       setStats(newStats);
     } catch (err) {
@@ -130,14 +169,14 @@ export const AdminSubmissionsPage = () => {
 
   // Export to CSV / Excel (with UTF-8 BOM)
   const handleExportCSV = () => {
-    if (submissions.length === 0) {
+    if (filteredSubmissions.length === 0) {
       addToast('Không có dữ liệu bài thi để xuất báo cáo', 'warning');
       return;
     }
 
     try {
       const headers = ['STT', 'Họ và tên thí sinh', 'Email', 'Chủ đề bài thi', 'Điểm số', 'Tổng câu hỏi', 'Tỉ lệ đúng (%)', 'Xếp loại', 'Thời lượng (giây)', 'Ngày làm bài'];
-      const rows = submissions.map((sub, index) => [
+      const rows = filteredSubmissions.map((sub, index) => [
         index + 1,
         `"${sub.user?.fullname || 'Ẩn danh'}"`,
         `"${sub.user?.email || 'N/A'}"`,
@@ -188,8 +227,8 @@ export const AdminSubmissionsPage = () => {
   };
 
   // Pagination calculation
-  const totalPages = Math.ceil(submissions.length / itemsPerPage);
-  const currentSubmissions = submissions.slice(
+  const totalPages = Math.ceil(filteredSubmissions.length / itemsPerPage);
+  const currentSubmissions = filteredSubmissions.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -252,7 +291,7 @@ export const AdminSubmissionsPage = () => {
             className="btn btn-primary btn-sm"
             style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
           >
-            <Download size={16} /> Xuất Báo Cáo (CSV/Excel)
+            <Download size={16} /> Xuất Báo Cáo ({filteredSubmissions.length})
           </button>
         </div>
       </div>
@@ -274,7 +313,7 @@ export const AdminSubmissionsPage = () => {
             <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)' }}>LƯỢT THI</span>
           </div>
           <h3 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '2px' }}>
-            {stats?.totalSubmissions || submissions.length}
+            {stats?.totalSubmissions || allSubmissions.length}
           </h3>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Tổng số bài nộp hoàn thành</p>
         </div>
@@ -398,7 +437,7 @@ export const AdminSubmissionsPage = () => {
         </div>
       )}
 
-      {/* Filter and Search Bar */}
+      {/* Real-time Filter and Search Bar (Zero Reload Lag) */}
       <div
         className="glass-card"
         style={{
@@ -411,8 +450,8 @@ export const AdminSubmissionsPage = () => {
           justifyContent: 'space-between',
         }}
       >
-        {/* Search Input */}
-        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', flex: '1 1 280px', position: 'relative' }}>
+        {/* Instant Search Input */}
+        <div style={{ display: 'flex', flex: '1 1 280px', position: 'relative' }}>
           <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input
             type="text"
@@ -422,15 +461,24 @@ export const AdminSubmissionsPage = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{ paddingLeft: '42px', width: '100%', height: '42px' }}
           />
-        </form>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer' }}
+              title="Xóa tìm kiếm"
+            >
+              <X size={16} />
+            </button>
+          )}
+        </div>
 
-        {/* Filter Dropdowns */}
+        {/* Real-time Filter Dropdowns */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
           {/* Topic filter */}
           <select
             className="form-select"
             value={selectedTopic}
-            onChange={(e) => { setSelectedTopic(e.target.value); setCurrentPage(1); }}
+            onChange={(e) => setSelectedTopic(e.target.value)}
             style={{ width: 'auto', minWidth: '170px', height: '42px' }}
           >
             <option value="">Tất cả chủ đề</option>
@@ -443,7 +491,7 @@ export const AdminSubmissionsPage = () => {
           <select
             className="form-select"
             value={selectedGrade}
-            onChange={(e) => { setSelectedGrade(e.target.value); setCurrentPage(1); }}
+            onChange={(e) => setSelectedGrade(e.target.value)}
             style={{ width: 'auto', minWidth: '150px', height: '42px' }}
           >
             <option value="all">Tất cả xếp loại</option>
@@ -456,7 +504,7 @@ export const AdminSubmissionsPage = () => {
           <select
             className="form-select"
             value={sortBy}
-            onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
+            onChange={(e) => setSortBy(e.target.value)}
             style={{ width: 'auto', minWidth: '160px', height: '42px' }}
           >
             <option value="newest">Mới nhất trước</option>
@@ -473,7 +521,7 @@ export const AdminSubmissionsPage = () => {
       <div className="glass-card" style={{ padding: '0', backgroundColor: 'var(--bg-surface)', overflow: 'hidden' }}>
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontSize: '1.15rem', fontWeight: 800 }}>
-            Danh Sách Lượt Làm Bài ({submissions.length})
+            Danh Sách Lượt Làm Bài ({filteredSubmissions.length})
           </h2>
           <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
             Trang {currentPage} / {Math.max(1, totalPages)}
@@ -635,7 +683,7 @@ export const AdminSubmissionsPage = () => {
             }}
           >
             <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-              Hiển thị {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, submissions.length)} trong tổng số {submissions.length} bài
+              Hiển thị {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filteredSubmissions.length)} trong tổng số {filteredSubmissions.length} bài
             </span>
 
             <div style={{ display: 'flex', gap: '6px' }}>
