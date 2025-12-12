@@ -1,6 +1,6 @@
-# QuizMaster - Nền Tảng Thi Trắc Nghiệm Trực Tuyến Fullstack
+# EduExam Platform - Nền Tảng Thi Trắc Nghiệm & Phân Tích Điểm Số Trực Tuyến
 
-QuizMaster là ứng dụng luyện thi và đánh giá năng lực trắc nghiệm trực tuyến toàn diện, được xây dựng theo kiến trúc Client-Server hiện đại. Ứng dụng cung cấp trải nghiệm làm bài thi tốc độ cao, giao diện trực quan và bộ công cụ quản trị mạnh mẽ.
+EduExam Platform là hệ thống luyện thi và đánh giá năng lực trắc nghiệm trực tuyến toàn diện, được xây dựng theo kiến trúc Client-Server hiện đại. Ứng dụng cung cấp trải nghiệm làm bài thi tốc độ cao, giao diện trực quan và bộ công cụ quản trị & phân tích số liệu mạnh mẽ.
 
 ---
 

@@ -127,7 +127,7 @@ export const HomePage = () => {
                     <Brain size={24} color="#fff" />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>QuizMaster IQ</h3>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>EduExam IQ</h3>
                     <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Thử thách hôm nay</p>
                   </div>
                 </div>
@@ -319,11 +319,11 @@ export const HomePage = () => {
         )}
       </section>
 
-      {/* 4. Why Choose QuizMaster */}
+      {/* 4. Why Choose EduExam */}
       <section className="container">
         <div style={{ textAlign: 'center', maxWidth: '650px', margin: '0 auto 50px' }}>
           <span className="badge badge-primary" style={{ marginBottom: '10px' }}>TÍNH NĂNG VƯỢT TRỘI</span>
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 800 }}>Tại Sao Nên Chọn QuizMaster?</h2>
+          <h2 style={{ fontSize: '2.2rem', fontWeight: 800 }}>Tại Sao Nên Chọn EduExam?</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '1rem', marginTop: '10px' }}>
             Được xây dựng với các tiêu chuẩn công nghệ hiện đại, mang lại trải nghiệm ôn luyện và đánh giá năng lực tối ưu nhất.
           </p>

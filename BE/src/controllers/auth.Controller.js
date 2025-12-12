@@ -31,7 +31,7 @@ const sendVerifyMail = async (req, res) => {
 
     await sendMail(
       email,
-      "Verify Your Email - Quiz App",
+      "Verify Your Email - EduExam Platform",
       `
         <h3>Hello ${fullname},</h3>
         <p>Please click the link below to verify your account:</p>
@@ -309,7 +309,7 @@ const sendResetPasswordEmail = async (req, res) => {
 
     const sent = await sendMail(
       email,
-      "Reset your password - Quiz App",
+      "Reset your password - EduExam Platform",
       `
         <h3>Xin chào ${existing.fullname},</h3>
         <p>Nhấn vào liên kết bên dưới để đặt lại mật khẩu của bạn:</p>

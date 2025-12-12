@@ -1,6 +1,6 @@
-# QuizMaster - Frontend Client (Vite + React)
+# EduExam Platform - Frontend Client (Vite + React)
 
-Frontend của QuizMaster được xây dựng bằng **Vite** và **React 18**, mang lại tốc độ phản hồi tức thì, trải nghiệm Single Page Application (SPA) mượt mà và giao diện chuẩn UI/UX hiện đại.
+Frontend của EduExam Platform được xây dựng bằng **Vite** và **React 18**, mang lại tốc độ phản hồi tức thì, trải nghiệm Single Page Application (SPA) mượt mà và giao diện chuẩn UI/UX hiện đại.
 
 ---
 

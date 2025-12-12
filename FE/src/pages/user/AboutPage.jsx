@@ -16,7 +16,7 @@ export const AboutPage = () => {
           <span className="gradient-text">Học Tập & Đánh Giá Năng Lực</span>
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1.7, maxWidth: '640px', margin: '0 auto' }}>
-          QuizMaster được thành lập với mục tiêu xây dựng một nền tảng thi trắc nghiệm trực tuyến chuẩn mực, nhanh chóng, chính xác và trực quan nhất cho mọi người học.
+          EduExam Platform được xây dựng với mục tiêu cung cấp một nền tảng thi trắc nghiệm trực tuyến chuẩn mực, nhanh chóng, chính xác và trực quan nhất cho mọi người học.
         </p>
       </div>
 

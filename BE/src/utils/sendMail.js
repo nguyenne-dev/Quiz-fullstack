@@ -12,7 +12,7 @@ const sendMail = async (to, subject, htmlContent) => {
     });
 
     const mailOptions = {
-      from: `"Quiz App" <${process.env.EMAIL_USER}>`, // tên người gửi
+      from: `"EduExam Platform" <${process.env.EMAIL_USER}>`, // tên người gửi
       to,               // email người nhận
       subject,          // tiêu đề
       html: htmlContent // nội dung HTML

@@ -70,7 +70,7 @@ export const Navbar = () => {
             <Sparkles size={22} color="#ffffff" />
           </div>
           <span style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.03em' }}>
-            Quiz<span className="gradient-text">Master</span>
+            Edu<span className="gradient-text">Exam</span>
           </span>
         </Link>
 

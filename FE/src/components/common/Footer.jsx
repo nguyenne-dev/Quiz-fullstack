@@ -38,75 +38,48 @@ export const Footer = () => {
                 <Sparkles size={18} color="#ffffff" />
               </div>
               <span style={{ fontSize: '1.3rem', fontWeight: 800, letterSpacing: '-0.03em' }}>
-                Quiz<span className="gradient-text">Master</span>
+                Edu<span className="gradient-text">Exam</span>
               </span>
             </Link>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
               Nền tảng kiểm tra kiến thức trắc nghiệm trực tuyến thông minh, tốc độ cao, hỗ trợ đa dạng chủ đề và bảng tổng kết chi tiết.
             </p>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <a
-                href="https://github.com/nguyenne-dev/Quiz-fullstack"
-                target="_blank"
-                rel="noreferrer"
-                className="btn-icon btn-secondary"
-                style={{ width: '36px', height: '36px' }}
-                title="GitHub Repo"
-              >
-                <Github size={16} />
-              </a>
-              <Link
-                to="/contact"
-                className="btn-icon btn-secondary"
-                style={{ width: '36px', height: '36px' }}
-                title="Liên hệ"
-              >
-                <Mail size={16} />
-              </Link>
-            </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '20px' }}>Khám phá</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <Link to="/topics" style={{ color: 'var(--text-muted)', fontSize: '0.9rem', transition: 'color 0.2s' }}>
-                Tất cả chủ đề
-              </Link>
-              <Link to="/submissions" style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Lịch sử thi
-              </Link>
-              <Link to="/profile" style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Tài khoản cá nhân
-              </Link>
+            <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '18px' }}>Điều Hướng</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+              <Link to="/" style={{ transition: 'color var(--transition-fast)' }}>Trang chủ</Link>
+              <Link to="/topics" style={{ transition: 'color var(--transition-fast)' }}>Chủ đề thi trắc nghiệm</Link>
+              <Link to="/about" style={{ transition: 'color var(--transition-fast)' }}>Về chúng tôi</Link>
+              <Link to="/contact" style={{ transition: 'color var(--transition-fast)' }}>Hỗ trợ & Liên hệ</Link>
             </div>
           </div>
 
-          {/* Platform */}
+          {/* Topics Preview */}
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '20px' }}>Thông tin</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <Link to="/about" style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Giới thiệu dự án
-              </Link>
-              <Link to="/contact" style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Hỗ trợ & Liên hệ
-              </Link>
-              <Link to="/verify" style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Kích hoạt tài khoản
-              </Link>
+            <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '18px' }}>Chủ Đề Nổi Bật</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+              <Link to="/topics">Lập Trình Web (HTML, CSS, JS)</Link>
+              <Link to="/topics">React & Frontend Ecosystem</Link>
+              <Link to="/topics">Node.js & Backend Architecture</Link>
+              <Link to="/topics">Cơ Sở Dữ Liệu & SQL/NoSQL</Link>
             </div>
           </div>
 
-          {/* Quick Newsletter / CTA */}
+          {/* System Info */}
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '20px' }}>Bắt đầu làm bài</h4>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '16px' }}>
-              Tham gia ngay hôm nay để thử thách kiến thức và theo dõi sự tiến bộ!
-            </p>
-            <Link to="/topics" className="btn btn-primary btn-sm" style={{ width: '100%' }}>
-              Luyện tập ngay <ArrowRight size={16} />
-            </Link>
+            <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '18px' }}>Hệ Thống</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="status-dot online"></span>
+                <span>Trạng thái: <strong>Hoạt động ổn định</strong></span>
+              </div>
+              <p>Phiên bản: <strong>EduExam v2.0</strong></p>
+              <p>Thời gian phản hồi: <strong>&lt; 50ms</strong></p>
+              <p>Bảo mật: <strong>JWT Authentication</strong></p>
+            </div>
           </div>
         </div>
 
@@ -124,9 +97,9 @@ export const Footer = () => {
             fontSize: '0.85rem',
           }}
         >
-          <p>© {new Date().getFullYear()} QuizMaster. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} EduExam Platform. All rights reserved.</p>
           <p style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            Xây dựng với <Heart size={14} color="var(--danger)" fill="var(--danger)" /> bởi Đội ngũ QuizMaster
+            Xây dựng với <Heart size={14} color="var(--danger)" fill="var(--danger)" /> bởi Đội ngũ EduExam
           </p>
         </div>
       </div>

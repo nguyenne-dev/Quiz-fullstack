@@ -65,7 +65,7 @@ export const ContactPage = () => {
                 </div>
                 <div>
                   <p style={{ fontWeight: 600, fontSize: '0.95rem' }}>Email hỗ trợ</p>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>support@quizmaster.dev</p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>support@eduexam.dev</p>
                 </div>
               </div>
 

@@ -90,7 +90,7 @@ export const AdminDashboardPage = () => {
             Bảng Điều Khiển Quản Trị
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
-            Tổng quan số liệu và quản lý toàn bộ hệ sinh thái bài thi QuizMaster.
+            Tổng quan số liệu và quản lý toàn bộ hệ sinh thái khảo thí EduExam Platform.
           </p>
         </div>
 

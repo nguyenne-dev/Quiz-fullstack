@@ -133,7 +133,7 @@ export const RegisterPage = () => {
               </div>
               <h1 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Tạo Tài Khoản</h1>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px' }}>
-                Đăng ký ngay để bắt đầu thử thách kiến thức với QuizMaster
+                Đăng ký ngay để bắt đầu tham gia thi trắc nghiệm cùng EduExam Platform
               </p>
             </div>
 
