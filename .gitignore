@@ -8,6 +8,7 @@ FE/node_modules/
 BE/.env
 FE/.env
 FE/.env.local
+FE/.env.production
 
 # Build outputs
 dist/

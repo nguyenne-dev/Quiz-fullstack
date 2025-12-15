@@ -105,6 +105,8 @@ npm run dev
 ```
 Ứng dụng Frontend sẽ chạy tại: `http://localhost:5173`
 
+> **Lưu ý Backend URL:** Frontend đọc biến `VITE_API_URL`. Mặc định dev dùng `http://localhost:3002` (Backend local). Khi build production, Vite tự nạp `FE/.env.production` để trỏ về Backend đã deploy tại `https://eduexam-se5g.onrender.com`.
+
 ---
 
 ## 📂 Cấu Trúc Thư Mục Dự Án
