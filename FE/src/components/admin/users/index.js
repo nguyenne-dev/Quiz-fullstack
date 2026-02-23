@@ -87,10 +87,10 @@ function Users() {
     }
   };
 
-  // 🔹 Hàm update status
+  // Hàm update status
   const handleUpdateStatus = async (userId, fullname, newStatus) => {
     if (confirm(`Bạn có chắc muốn đổi trạng thái của ${fullname} thành "${newStatus}" không?`)) {
-      console.log("Update status:", { id: userId, newStatus });
+      // console.log("Update status:", { id: userId, newStatus });
       const result = await status(userId, { status: newStatus })
       if (result.success) {
         setReload(Date.now())

@@ -13,7 +13,6 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const router = useRouter();
 
 
   useEffect(() => {
@@ -78,7 +77,8 @@ function Login() {
 
         setTimeout(() => {
           setShowNotify(false);
-          router.push('/');
+          if(user.role === "ADMIN"){window.location.href = './admin'}
+          else{window.location.href = './';}
         }, 1500);
       } else {
         setIsLoading(false);

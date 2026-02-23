@@ -38,7 +38,7 @@ export default function ContactPage() {
                   </div>
                   <div className="contact-details">
                     <p>Điện thoại</p>
-                    <p>+84 866 458 318</p>
+                    <p>+84 xxx xxx xxx</p>
                   </div>
                 </div>
 

@@ -26,14 +26,14 @@ export default function LayoutUser({ children }) {
     setLoading(false)
   }, [pathname])
 
-  // 👉 Hàm logout
+  //  Hàm logout
   const handleLogout = () => {
     Cookies.remove('token');
     Cookies.remove('_id');
     window.location.href = '/login';
   };
 
-  // 👉 Đóng dropdown khi click ra ngoài
+  //  Đóng dropdown khi click ra ngoài
   useEffect(() => {
     function handleClickOutside(event) {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {

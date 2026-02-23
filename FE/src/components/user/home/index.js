@@ -8,7 +8,7 @@ export default function HomePage() {
     // Observer để animate khi scroll
     const homeObserverOptions = {
       threshold: 0.1,
-      rootMargin: "0px 0px -50px 0px",
+      rootMargin: "0px 0px -0px 0px",
     };
 
     const homeObserver = new IntersectionObserver((entries) => {

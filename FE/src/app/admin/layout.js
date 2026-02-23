@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Cookies from 'js-cookie';
 import { FaBars, FaTimes, FaTachometerAlt, FaBookOpen, FaQuestionCircle, FaCheckCircle, FaUserFriends } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import "./layout.css";
@@ -16,7 +17,7 @@ export default function AdminLayout({ children }) {
     { href: "/admin", label: "Tổng quan", icon: <FaTachometerAlt /> },
     { href: "/admin/topic", label: "Chủ đề", icon: <FaBookOpen /> },
     { href: "/admin/question", label: "Câu hỏi", icon: <FaQuestionCircle /> },
-    { href: "/admin/answer", label: "Câu trả lời", icon: <FaCheckCircle /> },
+    // { href: "/admin/answer", label: "Câu trả lời", icon: <FaCheckCircle /> },
     { href: "/admin/user", label: "Người dùng", icon: <FaUserFriends /> },
   ];
 
@@ -27,6 +28,11 @@ export default function AdminLayout({ children }) {
     setLoading(false)
   }, [title])
 
+  const handleLogout = () => {
+      Cookies.remove('token');
+      Cookies.remove('_id');
+      window.location.href = '/login';
+    };
   return (
     <>
       {loading && <div className="result-container">
@@ -37,7 +43,7 @@ export default function AdminLayout({ children }) {
       </div>}
       <div className="layout__admin">
         <aside className={isSidebarOpen ? "sidebar" : "sidebar collapsed"}>
-          <img className="sidebar__logo" src="https://i.pravatar.cc/" alt="logo" />
+          <img className="sidebar__logo" src="https://i.pravatar.cc/150?u=user" alt="logo" />
           <ul className="sidebar__list">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
@@ -72,10 +78,11 @@ export default function AdminLayout({ children }) {
               <div>{title}</div>
             </div>
             <div className="header__profile">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+              {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
               </svg>
-              <div>Tên người dùng</div>
+              <div>Admin</div> */}
+              <button onClick={handleLogout}>Đăng xuất</button>
             </div>
           </header>
 

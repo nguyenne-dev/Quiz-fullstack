@@ -29,7 +29,7 @@ export default function RegisterPage() {
     setIsloading(true);
     try {
       const result = await send_verify_mail(formData);
-      console.log(result);
+      // console.log(result);
       if (result.success) {
         alert("Vui lòng kiểm tra email để xác nhận!");
         router.push("/verify")
@@ -43,7 +43,7 @@ export default function RegisterPage() {
     }
   };
 
-  console.log(formData)
+  // console.log(formData)
 
   return (
     <div className="minimal-container">

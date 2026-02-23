@@ -10,7 +10,7 @@ import {
   RadioGroup,
   FormControlLabel,
   Box,
-  LinearProgress
+  LinearProgress,
 } from "@mui/material";
 import "./ListQuestion.css";
 
@@ -36,7 +36,7 @@ function ListQuestion() {
       setTimeSpent(
         `${minutes.toString().padStart(2, "0")}:${seconds
           .toString()
-          .padStart(2, "0")}`
+          .padStart(2, "0")}`,
       );
     }, 1000);
     return () => clearInterval(timer);
@@ -51,8 +51,7 @@ function ListQuestion() {
       }
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
-    return () =>
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [submitted, answers]);
 
   // Fetch câu hỏi từ API
@@ -73,7 +72,7 @@ function ListQuestion() {
   const handleSelectAnswer = (questionId, key) => {
     setAnswers((prev) => ({
       ...prev,
-      [questionId]: key
+      [questionId]: key,
     }));
   };
 
@@ -81,42 +80,29 @@ function ListQuestion() {
   const handleSubmit = () => {
     if (submitting) return; // ngăn spam
     setSubmitting(true);
-    setTimeout(() => {
-      alert(
-        `Nộp bài thành công!\n\nThống kê:\n- Tổng câu hỏi: ${questions.length
-        }\n- Đã trả lời: ${Object.keys(answers).length}\n- Thời gian làm bài: ${timeSpent}\n\nCảm ơn bạn đã tham gia!`
-      );
-      console.log("Câu trả lời đã chọn:", answers);
-      // console.log({
-      //   topicId: topicId,
-      //   startTime: startTime,
-      //   endTime: endTime,
-      //   answers: answers
-      // });
-      // const dataPost = {
-      //   topicId: topicId,
-      //   startedAt: startTime,
-      //   answers: answers
-      // }
-      const dataPost = {
-        topicId,
-        startedAt: new Date(startTime).toISOString(), // ISO string
-        submittedAt: new Date().toISOString(),            // thêm thời gian kết thúc
-        answers: Object.entries(answers).map(([questionId, selectedAnswer]) => ({
-          questionId,
-          selectedAnswer
-        }))
-      };
-      console.log(dataPost)
-      const fetchApi = async () => {
-        const result = await createSubmission(dataPost);
-        console.log(result);
-      }; fetchApi();
-      setSubmitting(false);
-      setSubmitted(true); // đánh dấu đã nộp -> bỏ cảnh báo reload
-    }, 2000);
-
-
+    const dataPost = {
+      topicId,
+      startedAt: new Date(startTime).toISOString(), // ISO string
+      submittedAt: new Date().toISOString(), // thêm thời gian kết thúc
+      answers: Object.entries(answers).map(([questionId, selectedAnswer]) => ({
+        questionId,
+        selectedAnswer,
+      })),
+    };
+    const fetchApi = async () => {
+      const result = await createSubmission(dataPost);
+      console.log(result);
+      if (result?.success) {
+        setSubmitted(true);
+        // chuyển sang trang result
+        router.push(`/result?id=${result.submissionId}`);
+      } else {
+        alert("Có lỗi xảy ra khi nộp bài!");
+      }
+    };
+    fetchApi();
+    setSubmitting(false);
+    setSubmitted(true); // đánh dấu đã nộp -> bỏ cảnh báo reload
   };
 
   // Thống kê tiến độ
@@ -152,8 +138,8 @@ function ListQuestion() {
               backgroundColor: "rgba(255, 255, 255, 0.3)",
               "& .MuiLinearProgress-bar": {
                 backgroundColor: "rgba(255, 255, 255, 0.8)",
-                borderRadius: 2
-              }
+                borderRadius: 2,
+              },
             }}
           />
           <div className="stats-box">
@@ -197,8 +183,9 @@ function ListQuestion() {
                           {ans.text}
                         </span>
                       }
-                      className={`radio-option ${answers[q._id] === ans.key ? "checked" : ""
-                        }`}
+                      className={`radio-option ${
+                        answers[q._id] === ans.key ? "checked" : ""
+                      }`}
                     />
                   ))}
                 </RadioGroup>
@@ -212,7 +199,7 @@ function ListQuestion() {
               textAlign: "center",
               pt: 4,
               borderTop: "1px solid rgba(0, 0, 0, 0.08)",
-              mt: 3
+              mt: 3,
             }}
           >
             <button

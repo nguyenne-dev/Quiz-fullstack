@@ -64,16 +64,16 @@ function PageTopic() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="result-container">
-        <div className="loading">
-          <div className="spinner"></div>
-          <p>Đang tải bài làm...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="result-container">
+  //       <div className="loading">
+  //         <div className="spinner"></div>
+  //         <p>Đang tải bài làm...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <>

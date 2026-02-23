@@ -35,7 +35,7 @@ function ChangePassword() {
     }
 
     // Gội API đổi thông tin
-    console.log(formData)
+    // console.log(formData)
     const fetchApi = async () => {
       const newData = { password: formData.password }
       const result = await updateInfo(newData)
