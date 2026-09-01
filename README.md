@@ -4,6 +4,15 @@ EduExam Platform là hệ thống luyện thi và đánh giá năng lực trắc
 
 ---
 
+## 🚀 Demo & Deploy
+
+| Thành phần | Link |
+| :--- | :--- |
+| **Frontend (Vercel)** | [https://eduexam-beta.vercel.app](https://eduexam-beta.vercel.app) |
+| **Backend API (Render)** | [https://eduexam-se5g.onrender.com](https://eduexam-se5g.onrender.com) |
+
+---
+
 ## 🌟 Tính Năng Nổi Bật
 
 ### 1. Dành cho Thí sinh / Người dùng (User)
